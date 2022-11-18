@@ -17,7 +17,7 @@ public class ProductsService : IProductsService
 
     public List<Product> GetProducts()
     {
-        return _productRepository.GetAllProducts();
+        return _productRepository.GetProducts();
     }
 
     public Product GetProductById(int id)
@@ -27,21 +27,26 @@ public class ProductsService : IProductsService
     
     public IActionResult DeleteProduct(int id)
     {
-
-        int result = _productRepository.DeleteProduct(id);
-        return result > 0 ? new AcceptedResult() : new BadRequestResult();
+        return _productRepository.DeleteProduct(id);
     }
 
     public IActionResult AddProduct(Product product)
     {
-        bool result = _productRepository.AddProduct(product);
-        return result ? new AcceptedResult() : new BadRequestResult();
+        return _productRepository.AddProduct(product);
     }
 
     public IActionResult UpdateProduct(Product product)
     {
-        int result = _productRepository.UpdateProduct(product);
-        return result > 0 ? new AcceptedResult() : new BadRequestResult();
+        return _productRepository.UpdateProduct(product);
     }
 
+    public List<ProductCategory> GetCategories()
+    {
+        return _productRepository.GetCategories();
+    }
+
+    public IActionResult AddCategory(ProductCategory productCategory)
+    {
+        return _productRepository.AddCategory(productCategory);
+    }
 }

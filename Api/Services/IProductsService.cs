@@ -10,4 +10,6 @@ public interface IProductsService
     IActionResult DeleteProduct(int id);
     IActionResult AddProduct(Product product);
     IActionResult UpdateProduct(Product product);
+    List<ProductCategory> GetCategories();
+    IActionResult AddCategory(ProductCategory productCategory);
 }

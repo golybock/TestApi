@@ -45,5 +45,16 @@ public class ProductsController : Controller, IProductsService
     {
         return _productsService.UpdateProduct(product);
     }
-        
+    
+    [HttpGet("GetCategories")]
+    public List<ProductCategory> GetCategories()
+    {
+        return _productsService.GetCategories();
+    }
+
+    [HttpPost("AddCategory")]
+    public IActionResult AddCategory(ProductCategory productCategory)
+    {
+        return _productsService.AddCategory(productCategory);
+    }
 }
