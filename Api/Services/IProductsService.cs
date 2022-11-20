@@ -1,15 +1,41 @@
-﻿using Api.Models;
+﻿using Api.Models.Product;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Services;
 
 public interface IProductsService
 {
-    List<Product> GetProducts();
-    Product GetProductById(int id);
-    IActionResult DeleteProduct(int id);
-    IActionResult AddProduct(Product product);
-    IActionResult UpdateProduct(Product product);
-    List<ProductCategory> GetCategories();
-    IActionResult AddCategory(ProductCategory productCategory);
+    // product
+    public IActionResult GetProducts();
+    public IActionResult GetProductById(int id);
+    public IActionResult DeleteProduct(int id);
+    public IActionResult DeleteProduct(Product product);
+    public IActionResult AddProduct(Product product);
+    public IActionResult UpdateProduct(Product product);
+    // category
+    public IActionResult AddProductCategory(Category category);
+    public IActionResult EditProductCategory(Category category);
+    public IActionResult DeleteProductCategory(Category category);
+    // brand
+    public IActionResult AddBrand(Brand brand);
+    public IActionResult DeleteBrand(Brand brand);
+    public IActionResult EditBrand(Brand brand);
+    // product brand
+    public IActionResult GetProductBrands(Product product);
+    public IActionResult GetBrands();
+    public IActionResult AddBrandToProduct(Product product, Brand brand);
+    public IActionResult AddBrandsToProduct(Product product, List<Brand> brands);
+    public IActionResult DeleteBrandFromProduct(Product product, Brand brand);
+    public IActionResult SetProductBrands(Product product, List<Brand> brands);
+    public IActionResult ClearProductBrands(Product product);
+    // product photo
+    public IActionResult AddProductPhoto(Product product, ProductPhoto productPhoto);
+    public IActionResult DeleteProductPhoto(ProductPhoto productPhoto);
+    public IActionResult EditProductPhoto(ProductPhoto productPhoto);
+    public IActionResult AddProductPhotos(Product product, List<ProductPhoto> productPhotos);
+    public IActionResult SetProductPhotos(Product product, List<ProductPhoto> productPhotos);
+    public IActionResult ClearProductPhotos(Product product);
+    // product price
+    public IActionResult AddNewProductPrice(Product product, ProductPrice productPrice);
+    public IActionResult DeleteProductPrice(ProductPrice productPrice);
 }

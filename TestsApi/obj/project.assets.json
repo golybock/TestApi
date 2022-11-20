@@ -8436,23 +8436,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\arshi\\.nuget\\packages\\": {},
+    "C:\\Users\\teplo\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\arshi\\RiderProjects\\TestApi\\TestsApi\\TestsApi.csproj",
+      "projectUniqueName": "C:\\Coding\\C#\\android\\TestApi\\TestsApi\\TestsApi.csproj",
       "projectName": "TestsApi",
-      "projectPath": "C:\\Users\\arshi\\RiderProjects\\TestApi\\TestsApi\\TestsApi.csproj",
-      "packagesPath": "C:\\Users\\arshi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\arshi\\RiderProjects\\TestApi\\TestsApi\\obj\\",
+      "projectPath": "C:\\Coding\\C#\\android\\TestApi\\TestsApi\\TestsApi.csproj",
+      "packagesPath": "C:\\Users\\teplo\\.nuget\\packages\\",
+      "outputPath": "C:\\Coding\\C#\\android\\TestApi\\TestsApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\arshi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\teplo\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -8461,15 +8461,14 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\arshi\\RiderProjects\\TestApi\\Api\\Api.csproj": {
-              "projectPath": "C:\\Users\\arshi\\RiderProjects\\TestApi\\Api\\Api.csproj"
+            "C:\\Coding\\C#\\android\\TestApi\\Api\\Api.csproj": {
+              "projectPath": "C:\\Coding\\C#\\android\\TestApi\\Api\\Api.csproj"
             }
           }
         }
