@@ -17,36 +17,36 @@ public class ClientService : IClientService
     
     public IActionResult GetClient(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.GetClient(id);
     }
 
     public IActionResult GetClient(string token)
     {
-        throw new NotImplementedException();
+        return _productRepository.GetClient(token);
     }
 
     public IActionResult GetClientOrders(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.GetClientOrders(id);
     }
 
     public IActionResult AddClient(Client client)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddClient(client);
     }
 
     public IActionResult EditClient(Client client)
     {
-        throw new NotImplementedException();
+        return _productRepository.EditClient(client);
     }
 
     public IActionResult DeleteClient(Client client)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteClient(client);
     }
 
     public IActionResult DeleteClient(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteClient(id);
     }
 }

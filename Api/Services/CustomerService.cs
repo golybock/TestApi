@@ -17,31 +17,31 @@ public class CustomerService : ICustomerService
     
     public IActionResult GetCustomer(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.GetCustomer(id);
     }
 
     public IActionResult AddCustomer(Customer customer)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddCustomer(customer);
     }
 
     public IActionResult EditCustomer(Customer customer)
     {
-        throw new NotImplementedException();
+        return _productRepository.EditCustomer(customer);
     }
 
     public IActionResult DeleteCustomer(Customer customer)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteCustomer(customer);
     }
 
     public IActionResult DeleteCustomer(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteCustomer(id);
     }
 
     public IActionResult GetCustomerProducts(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.GetCustomerProducts(id);
     }
 }
