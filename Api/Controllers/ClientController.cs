@@ -22,39 +22,46 @@ namespace Api.Controllers
             _clientService = new ClientService(configuration);
         }
         
+        [HttpGet("GetClientById")]
         public IActionResult GetClient(int id)
         {
-            throw new NotImplementedException();
+            return _clientService.GetClient(id);
         }
-
+        
+        [HttpGet("GetClientByToken")]
         public IActionResult GetClient(string token)
         {
-            throw new NotImplementedException();
+            return _clientService.GetClient(token);
         }
-
+        
+        [HttpGet("GetClientOrders")]
         public IActionResult GetClientOrders(int id)
         {
-            throw new NotImplementedException();
+            return _clientService.GetClientOrders(id);
         }
-
+        
+        [HttpPost("AddClient")]
         public IActionResult AddClient(Client client)
         {
-            throw new NotImplementedException();
+            return _clientService.AddClient(client);
         }
-
+        
+        [HttpPost("EditClient")]
         public IActionResult EditClient(Client client)
         {
-            throw new NotImplementedException();
+            return _clientService.EditClient(client);
         }
-
+        
+        [HttpPost("DeleteClientByObject")]
         public IActionResult DeleteClient(Client client)
         {
-            throw new NotImplementedException();
+            return _clientService.DeleteClient(client);
         }
-
+        
+        [HttpPost("DeleteClientById")]
         public IActionResult DeleteClient(int id)
         {
-            throw new NotImplementedException();
+            return _clientService.DeleteClient(id);
         }
     }
 }
