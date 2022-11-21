@@ -23,19 +23,19 @@ public interface IProductsService
     // product brand
     public IActionResult GetProductBrands(Product product);
     public IActionResult GetBrands();
-    public IActionResult AddBrandToProduct(Product product, Brand brand);
-    public IActionResult AddBrandsToProduct(Product product, List<Brand> brands);
-    public IActionResult DeleteBrandFromProduct(Product product, Brand brand);
-    public IActionResult SetProductBrands(Product product, List<Brand> brands);
+    public IActionResult AddBrandToProduct(ProductBrand productBrand);
+    public IActionResult AddBrandsToProduct(List<ProductBrand> productBrands);
+    public IActionResult DeleteBrandFromProduct(ProductBrand productBrand);
+    public IActionResult SetProductBrands(List<ProductBrand> productBrands);
     public IActionResult ClearProductBrands(Product product);
     // product photo
-    public IActionResult AddProductPhoto(Product product, ProductPhoto productPhoto);
+    public IActionResult AddProductPhoto(ProductPhoto productPhoto);
     public IActionResult DeleteProductPhoto(ProductPhoto productPhoto);
     public IActionResult EditProductPhoto(ProductPhoto productPhoto);
-    public IActionResult AddProductPhotos(Product product, List<ProductPhoto> productPhotos);
-    public IActionResult SetProductPhotos(Product product, List<ProductPhoto> productPhotos);
+    public IActionResult AddProductPhotos(List<ProductPhoto> productPhotos);
+    public IActionResult SetProductPhotos(List<ProductPhoto> productPhotos);
     public IActionResult ClearProductPhotos(Product product);
     // product price
-    public IActionResult AddNewProductPrice(Product product, ProductPrice productPrice);
+    public IActionResult AddNewProductPrice(ProductPrice productPrice);
     public IActionResult DeleteProductPrice(ProductPrice productPrice);
 }

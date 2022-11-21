@@ -25,6 +25,6 @@ public interface IOrderService
     public IActionResult DeleteStatus(OrderStatus orderStatus);
     public IActionResult EditOrderStatus(OrderStatus orderStatus);
     // order statuses
-    public IActionResult AddOrderStatus(Order order, OrderStatus orderStatus);
-    public IActionResult DeleteOrderStatus(Order order, OrderStatus orderStatus);
+    public IActionResult AddOrderStatus(OrderStatuses orderStatuses);
+    public IActionResult DeleteOrderStatus(OrderStatuses orderStatuses);
 }

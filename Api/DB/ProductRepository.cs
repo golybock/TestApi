@@ -480,7 +480,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         return new OkObjectResult(brands);
     }
 
-    public IActionResult AddBrandToProduct(Product product, Brand brand)
+    public IActionResult AddBrandToProduct(ProductBrand productBrand)
     {
         connection.Open();
         // запрос
@@ -492,8 +492,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = product.Id},
-                new() {Value = brand.Id}
+                new() {Value = productBrand.Product.Id},
+                new() {Value = productBrand.Brand.Id}
             }
         };
         // пробуем выолнить
@@ -513,13 +513,13 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult AddBrandsToProduct(Product product, List<Brand> brands)
+    public IActionResult AddBrandsToProduct(List<ProductBrand> productBrands)
     {
         try
         {
-            foreach (var brand in brands)
+            foreach (var productBrand in productBrands)
             {
-                AddBrandToProduct(product, brand);
+                AddBrandToProduct(productBrand);
             }
             return new AcceptedResult();
         }
@@ -529,7 +529,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteBrandFromProduct(Product product, Brand brand)
+    public IActionResult DeleteBrandFromProduct(ProductBrand productBrand)
     {
         connection.Open();
         // запрос
@@ -539,8 +539,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = product.Id},
-                new() { Value = brand.Id}
+                new() {Value = productBrand.Product.Id},
+                new() { Value = productBrand.Brand.Id}
             }
         };
         // пробуем выолнить
@@ -560,21 +560,20 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult SetProductBrands(Product product, List<Brand> brands)
+    public IActionResult SetProductBrands(List<ProductBrand> productBrands)
     {
         try
         {
-            ClearProductBrands(product);
-            AddBrandsToProduct(product, brands);
+            ClearProductBrands(productBrands.ElementAt(0).Product);
+            AddBrandsToProduct(productBrands);
             return new AcceptedResult();
         }
         catch
         {
             return new BadRequestResult();
         }
-
     }
-
+    
     public IActionResult ClearProductBrands(Product product)
     {
         connection.Open();
@@ -603,6 +602,11 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             connection.Close();
         }
+    }
+
+    public IActionResult AddProductPhoto(ProductPhoto productPhoto)
+    {
+        throw new NotImplementedException();
     }
 
     public IActionResult AddProductPhoto(Product product, ProductPhoto productPhoto)
@@ -702,6 +706,16 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
+    public IActionResult AddProductPhotos(List<ProductPhoto> productPhotos)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IActionResult SetProductPhotos(List<ProductPhoto> productPhotos)
+    {
+        throw new NotImplementedException();
+    }
+
     public IActionResult AddProductPhotos(Product product, List<ProductPhoto> productPhotos)
     {
         try
@@ -761,6 +775,11 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             connection.Close();
         }
+    }
+
+    public IActionResult AddNewProductPrice(ProductPrice productPrice)
+    {
+        throw new NotImplementedException();
     }
 
     public IActionResult AddNewProductPrice(Product product, ProductPrice productPrice)
@@ -1285,7 +1304,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult AddOrderStatus(Order order, OrderStatus orderStatus)
+    public IActionResult AddOrderStatus(OrderStatuses orderStatus)
     {
         connection.Open();
         // запрос
@@ -1296,8 +1315,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() { Value = order.Id},
-                new() { Value = orderStatus.Id}
+                new() { Value = orderStatus.Order.Id},
+                new() { Value = orderStatus.OrderStatus.Id}
             }
         };
         // пробуем выолнить
@@ -1316,7 +1335,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteOrderStatus(Order order, OrderStatus orderStatus)
+    public IActionResult DeleteOrderStatus(OrderStatuses orderStatus)
     {
         connection.Open();
         // запрос
@@ -1326,8 +1345,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = order.Id},
-                new() {Value = orderStatus.Id},
+                new() {Value = orderStatus.Order.Id},
+                new() {Value = orderStatus.OrderStatus.Id},
             }
         };
         // пробуем выолнить
