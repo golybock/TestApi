@@ -160,7 +160,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         // что-то не так с данными
         catch (Exception e)
         {
-            // Console.WriteLine(e.ToString());
             return new BadRequestResult();
         }
         finally
@@ -476,7 +475,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult GetProductBrands(Product product)
+    public IActionResult GetProductBrands(int id)
     {
         // открываем подкючение к бд
         connection.Open();
@@ -493,7 +492,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         // выполняем команду
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
-            Parameters = {new() {Value = product.Id}}
+            Parameters = {new() {Value = id}}
         };
         using(cmd)
         {
@@ -679,7 +678,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult GetProductPhotos(Product product)
+    public IActionResult GetProductPhotos(int id)
     {
         // открываем подкючение к бд
         connection.Open();
@@ -692,7 +691,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
-            Parameters = {new() {Value = product.Id}}
+            Parameters = {new() {Value = id}}
         };
         
         // выполняем команду
@@ -1137,7 +1136,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult GetOrderProducts(Order order)
+    public IActionResult GetOrderProducts(int id)
     {
         // открываем подкючение к бд
         connection.Open();
@@ -1149,7 +1148,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
-            Parameters = {new() {Value = order.Id}}
+            Parameters = {new() {Value = id}}
         };
         
         // выполняем команду
@@ -1433,7 +1432,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult GetOrderStatuses(Order order)
+    public IActionResult GetOrderStatuses(int id)
     {
         // открываем подкючение к бд
         connection.Open();
@@ -1446,7 +1445,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
-            Parameters = {new() {Value = order.Id}}
+            Parameters = {new() {Value = id}}
         };
         
         // выполняем команду
@@ -1671,7 +1670,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult GetCustomerProducts(Customer customer)
+    public IActionResult GetCustomerProducts(int id)
     {
         // открываем подкючение к бд
         connection.Open();
@@ -1683,7 +1682,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
-            Parameters = {new() {Value = customer.Id}}
+            Parameters = {new() {Value = id}}
         };
         
         // выполняем команду
@@ -1805,7 +1804,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         return new OkObjectResult(client);
     }
 
-    public IActionResult GetClientOrders(Client client)
+    public IActionResult GetClientOrders(int id)
     {
         // открываем подкючение к бд
         connection.Open();
@@ -1818,7 +1817,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
-            Parameters = {new() {Value = client.Id}}
+            Parameters = {new() {Value = id}}
         };
         
         // выполняем команду
@@ -1844,7 +1843,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         foreach (var order in orders)
         {
-            OkObjectResult ok = GetClient(client.Id) as OkObjectResult;
+            OkObjectResult ok = GetClient(id) as OkObjectResult;
             order.Client = ok.Value as Client;
         }
         

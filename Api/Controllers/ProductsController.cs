@@ -103,9 +103,9 @@ public class ProductsController : Controller, IProductsService
     }
     
     [HttpGet("GetProductBrands")]
-    public IActionResult GetProductBrands(Product product)
+    public IActionResult GetProductBrands(int id)
     {
-        return _productsService.GetProductBrands(product);
+        return _productsService.GetProductBrands(id);
     }
     
     [HttpGet("GetBrands")]
@@ -145,9 +145,9 @@ public class ProductsController : Controller, IProductsService
     }
     
     [HttpGet("GetProductPhotos")]
-    public IActionResult GetProductPhotos(Product product)
+    public IActionResult GetProductPhotos(int id)
     {
-        return _productsService.GetProductPhotos(product);
+        return _productsService.GetProductPhotos(id);
     }
 
     [HttpPost("AddProductPhoto")]

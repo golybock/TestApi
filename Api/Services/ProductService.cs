@@ -87,9 +87,9 @@ public class ProductsService : IProductsService
         return _productRepository.EditBrand(brand);
     }
 
-    public IActionResult GetProductBrands(Product product)
+    public IActionResult GetProductBrands(int id)
     {
-        return _productRepository.GetProductBrands(product);
+        return _productRepository.GetProductBrands(id);
     }
 
     public IActionResult GetBrands()
@@ -122,9 +122,9 @@ public class ProductsService : IProductsService
         return _productRepository.ClearProductBrands(product);
     }
 
-    public IActionResult GetProductPhotos(Product product)
+    public IActionResult GetProductPhotos(int id)
     {
-        return _productRepository.GetProductPhotos(product);
+        return _productRepository.GetProductPhotos(id);
     }
 
     public IActionResult AddProductPhoto(ProductPhoto productPhoto)

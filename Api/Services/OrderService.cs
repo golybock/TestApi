@@ -45,9 +45,9 @@ public class OrderService : IOrderService
         return _productRepository.EditOrder(order);
     }
 
-    public IActionResult GetOrderProducts(Order order)
+    public IActionResult GetOrderProducts(int id)
     {
-        return _productRepository.GetOrderProducts(order);
+        return _productRepository.GetOrderProducts(id);
     }
 
     public IActionResult AddProductToOrder(OrderProducts orderProducts)
@@ -95,9 +95,9 @@ public class OrderService : IOrderService
         return _productRepository.EditOrderStatus(orderStatus);
     }
 
-    public IActionResult GetOrderStatuses(Order order)
+    public IActionResult GetOrderStatuses(int id)
     {
-        return _productRepository.GetOrderStatuses(order);
+        return _productRepository.GetOrderStatuses(id);
     }
 
     public IActionResult AddOrderStatus(OrderStatuses orderStatuses)

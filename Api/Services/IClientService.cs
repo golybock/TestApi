@@ -8,7 +8,7 @@ public interface IClientService
 {
     public IActionResult GetClient(int id);
     public IActionResult GetClient(string token);
-    public IActionResult GetClientOrders(Client client);
+    public IActionResult GetClientOrders(int id);
     public IActionResult AddClient(Client client);
     public IActionResult EditClient(Client client);
     public IActionResult DeleteClient(Client client);

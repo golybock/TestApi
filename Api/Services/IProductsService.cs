@@ -23,7 +23,7 @@ public interface IProductsService
     public IActionResult DeleteBrand(Brand brand);
     public IActionResult EditBrand(Brand brand);
     // product brand
-    public IActionResult GetProductBrands(Product product);
+    public IActionResult GetProductBrands(int id);
     public IActionResult GetBrands();
     public IActionResult AddBrandToProduct(ProductBrand productBrand);
     public IActionResult AddBrandsToProduct(List<ProductBrand> productBrands);
@@ -31,7 +31,7 @@ public interface IProductsService
     public IActionResult SetProductBrands(List<ProductBrand> productBrands);
     public IActionResult ClearProductBrands(Product product);
     // product photo
-    public IActionResult GetProductPhotos(Product product);
+    public IActionResult GetProductPhotos(int id);
     public IActionResult AddProductPhoto(ProductPhoto productPhoto);
     public IActionResult DeleteProductPhoto(ProductPhoto productPhoto);
     public IActionResult EditProductPhoto(ProductPhoto productPhoto);

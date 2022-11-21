@@ -58,9 +58,9 @@ public class OrderController : Controller, IOrderService
     }
     
     [HttpGet("GetOrderProducts")]
-    public IActionResult GetOrderProducts(Order order)
+    public IActionResult GetOrderProducts(int id)
     {
-        return _orderService.GetOrderProducts(order);
+        return _orderService.GetOrderProducts(id);
     }
     
     [HttpGet("AddProductToOrder")]
@@ -118,9 +118,9 @@ public class OrderController : Controller, IOrderService
     }
     
     [HttpGet("GetOrderStatuses")]
-    public IActionResult GetOrderStatuses(Order order)
+    public IActionResult GetOrderStatuses(int id)
     {
-        return _orderService.GetOrderStatuses(order);
+        return _orderService.GetOrderStatuses(id);
     }
 
     [HttpPost("AddOrderStatus")]

@@ -10,5 +10,5 @@ public interface ICustomerService
     public IActionResult EditCustomer(Customer customer);
     public IActionResult DeleteCustomer(Customer customer);
     public IActionResult DeleteCustomer(int id);
-    public IActionResult GetCustomerProducts(Customer customer);
+    public IActionResult GetCustomerProducts(int id);
 }

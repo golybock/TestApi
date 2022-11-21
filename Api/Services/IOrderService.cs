@@ -14,7 +14,7 @@ public interface IOrderService
     public IActionResult DeleteOrder(int id);
     public IActionResult EditOrder(Order order);
     // order products
-    public IActionResult GetOrderProducts(Order order);
+    public IActionResult GetOrderProducts(int id);
     public IActionResult AddProductToOrder(OrderProducts orderProducts);
     public IActionResult AddProductsToOrder(List<OrderProducts> orderProducts);
     public IActionResult DeleteProductFromOrder(OrderProducts orderProducts);
@@ -26,7 +26,7 @@ public interface IOrderService
     public IActionResult DeleteStatus(OrderStatus orderStatus);
     public IActionResult EditOrderStatus(OrderStatus orderStatus);
     // order statuses
-    public IActionResult GetOrderStatuses(Order order);
+    public IActionResult GetOrderStatuses(int id);
     public IActionResult AddOrderStatus(OrderStatuses orderStatuses);
     public IActionResult DeleteOrderStatus(OrderStatuses orderStatuses);
 }
