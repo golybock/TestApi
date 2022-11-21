@@ -19,136 +19,136 @@ public class ProductsService : IProductsService
 
     public IActionResult GetProducts()
     {
-        throw new NotImplementedException();
+        return _productRepository.GetProducts();
     }
 
     public IActionResult GetProductById(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.GetProductById(id);
     }
 
     public IActionResult DeleteProduct(int id)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteProduct(id);
     }
 
     public IActionResult DeleteProduct(Product product)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteProduct(product);
     }
 
     public IActionResult AddProduct(Product product)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddProduct(product);
     }
 
     public IActionResult UpdateProduct(Product product)
     {
-        throw new NotImplementedException();
+        return _productRepository.UpdateProduct(product);
     }
 
     public IActionResult AddProductCategory(Category category)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddProductCategory(category);
     }
 
     public IActionResult EditProductCategory(Category category)
     {
-        throw new NotImplementedException();
+        return _productRepository.EditProductCategory(category);
     }
 
     public IActionResult DeleteProductCategory(Category category)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteProductCategory(category);
     }
 
     public IActionResult AddBrand(Brand brand)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddBrand(brand);
     }
 
     public IActionResult DeleteBrand(Brand brand)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteBrand(brand);
     }
 
     public IActionResult EditBrand(Brand brand)
     {
-        throw new NotImplementedException();
+        return _productRepository.EditBrand(brand);
     }
 
     public IActionResult GetProductBrands(Product product)
     {
-        throw new NotImplementedException();
+        return _productRepository.GetProductBrands(product);
     }
 
     public IActionResult GetBrands()
     {
-        throw new NotImplementedException();
+        return _productRepository.GetBrands();
     }
 
     public IActionResult AddBrandToProduct(Product product, Brand brand)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddBrandToProduct(product, brand);
     }
 
     public IActionResult AddBrandsToProduct(Product product, List<Brand> brands)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddBrandsToProduct(product, brands);
     }
 
     public IActionResult DeleteBrandFromProduct(Product product, Brand brand)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteBrandFromProduct(product, brand);
     }
 
     public IActionResult SetProductBrands(Product product, List<Brand> brands)
     {
-        throw new NotImplementedException();
+        return _productRepository.SetProductBrands(product, brands);
     }
 
     public IActionResult ClearProductBrands(Product product)
     {
-        throw new NotImplementedException();
+        return _productRepository.ClearProductBrands(product);
     }
 
     public IActionResult AddProductPhoto(Product product, ProductPhoto productPhoto)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddProductPhoto(product, productPhoto);
     }
 
     public IActionResult DeleteProductPhoto(ProductPhoto productPhoto)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteProductPhoto(productPhoto);
     }
 
     public IActionResult EditProductPhoto(ProductPhoto productPhoto)
     {
-        throw new NotImplementedException();
+        return _productRepository.EditProductPhoto(productPhoto);
     }
 
     public IActionResult AddProductPhotos(Product product, List<ProductPhoto> productPhotos)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddProductPhotos(product, productPhotos);
     }
 
     public IActionResult SetProductPhotos(Product product, List<ProductPhoto> productPhotos)
     {
-        throw new NotImplementedException();
+        return _productRepository.SetProductPhotos(product, productPhotos);
     }
 
     public IActionResult ClearProductPhotos(Product product)
     {
-        throw new NotImplementedException();
+        return _productRepository.ClearProductPhotos(product);
     }
 
     public IActionResult AddNewProductPrice(Product product, ProductPrice productPrice)
     {
-        throw new NotImplementedException();
+        return _productRepository.AddNewProductPrice(product, productPrice);
     }
 
     public IActionResult DeleteProductPrice(ProductPrice productPrice)
     {
-        throw new NotImplementedException();
+        return _productRepository.DeleteProductPrice(productPrice);
     }
 }
