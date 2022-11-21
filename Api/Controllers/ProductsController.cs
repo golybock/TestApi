@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [EnableCors("Police1")]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class ProductsController : Controller, IProductsService
 {

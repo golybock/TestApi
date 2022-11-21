@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Api.Models.Order;
 using Api.Services;
 using Microsoft.AspNetCore.Cors;
@@ -10,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [EnableCors("Police1")]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class OrderController : Controller, IOrderService
 {
