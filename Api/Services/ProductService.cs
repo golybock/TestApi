@@ -15,8 +15,7 @@ public class ProductsService : IProductsService
         _configuration = configuration;
         _productRepository = new ProductRepository(_configuration.GetConnectionString("ProductsAppCon"));
     }
-
-
+    
     public IActionResult GetProducts()
     {
         return _productRepository.GetProducts();
