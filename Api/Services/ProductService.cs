@@ -16,29 +16,20 @@ public class ProductsService : IProductsService
         _productRepository = new ProductRepository(_configuration.GetConnectionString("ProductsAppCon"));
     }
 
-    public List<Product> GetProducts()
-    {
-        return _productRepository.GetProducts();
-    }
 
-    IActionResult IProductsService.GetProductById(int id)
+    public IActionResult GetProducts()
     {
         throw new NotImplementedException();
     }
 
-    IActionResult IProductsService.GetProducts()
+    public IActionResult GetProductById(int id)
     {
         throw new NotImplementedException();
     }
 
-    public Product GetProductById(int id)
-    {
-        return _productRepository.GetProductById(id);
-    }
-    
     public IActionResult DeleteProduct(int id)
     {
-        return _productRepository.DeleteProduct(id);
+        throw new NotImplementedException();
     }
 
     public IActionResult DeleteProduct(Product product)
@@ -46,14 +37,14 @@ public class ProductsService : IProductsService
         throw new NotImplementedException();
     }
 
-    IActionResult IProductsService.AddProduct(Product product)
+    public IActionResult AddProduct(Product product)
     {
-        return AddProduct(product);
+        throw new NotImplementedException();
     }
 
-    IActionResult IProductsService.UpdateProduct(Product product)
+    public IActionResult UpdateProduct(Product product)
     {
-        return UpdateProduct(product);
+        throw new NotImplementedException();
     }
 
     public IActionResult AddProductCategory(Category category)
@@ -67,36 +58,6 @@ public class ProductsService : IProductsService
     }
 
     public IActionResult DeleteProductCategory(Category category)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult AddCategoryToProduct(Product product, Category category)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult AddCategoriesProduct(Product product, List<Category> categories)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult DeleteCategoryFromProduct(Product product, Category category)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult GetProductCategories(Product product)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult SetCategoriesToProduct(Product product, List<Category> categories)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult ClearProductCategories(Product product)
     {
         throw new NotImplementedException();
     }
@@ -156,12 +117,12 @@ public class ProductsService : IProductsService
         throw new NotImplementedException();
     }
 
-    public IActionResult DeleteProductPhoto(Product product, ProductPhoto productPhoto)
+    public IActionResult DeleteProductPhoto(ProductPhoto productPhoto)
     {
         throw new NotImplementedException();
     }
 
-    public IActionResult EditProductPhoto(Product product, ProductPhoto productPhoto)
+    public IActionResult EditProductPhoto(ProductPhoto productPhoto)
     {
         throw new NotImplementedException();
     }
@@ -186,28 +147,8 @@ public class ProductsService : IProductsService
         throw new NotImplementedException();
     }
 
-    public IActionResult DeleteProductPrice(Product product, ProductPrice productPrice)
+    public IActionResult DeleteProductPrice(ProductPrice productPrice)
     {
         throw new NotImplementedException();
-    }
-
-    public IActionResult AddProduct(Product product)
-    {
-        return _productRepository.AddProduct(product);
-    }
-
-    public IActionResult UpdateProduct(Product product)
-    {
-        return _productRepository.UpdateProduct(product);
-    }
-
-    public List<ProductCategory> GetCategories()
-    {
-        return _productRepository.GetCategories();
-    }
-
-    public IActionResult AddCategory(ProductCategory productCategory)
-    {
-        return _productRepository.AddCategory(productCategory);
     }
 }

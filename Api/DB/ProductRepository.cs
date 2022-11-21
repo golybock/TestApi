@@ -371,17 +371,113 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult EditBrand(Brand brand)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query =
+            @"update brand set
+                   name = $2, photo_url = $3 where id = $1";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = brand.Id},
+                new() { Value = brand.Name},
+                new() { Value = brand.PhotoUrl == null ? DBNull.Value : brand.PhotoUrl}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult GetProductBrands(Product product)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<Brand> brands = new List<Brand>();
+        
+        // запрос
+        string query = @"select b.id as id, b.name as name, b.photo_url as photo_url
+                            from product_brand
+                            join brand b on b.id = product_brand.brand_id
+                            where product_id = $1";
+        
+        // выполняем команду
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = product.Id}}
+        };
+        using(cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    Brand brand = new Brand();
+                    // перенос значений из строки базы данных в объект класса
+                    brand.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    brand.Name = reader.GetString(reader.GetOrdinal("name"));
+                    brand.PhotoUrl = reader.GetString(reader.GetOrdinal("photo_url"));
+                    brands.Add(brand);
+                }
+            }
+        }
+        
+        connection.Close();
+        
+        return new OkObjectResult(brands);
     }
 
     public IActionResult GetBrands()
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<Brand> brands = new List<Brand>();
+        
+        // запрос
+        string query = @"select * from brand";
+        
+        // выполняем команду
+        using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    Brand brand = new Brand();
+                    // перенос значений из строки базы данных в объект класса
+                    brand.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    brand.Name = reader.GetString(reader.GetOrdinal("name"));
+                    brand.PhotoUrl = reader.GetString(reader.GetOrdinal("photo_url"));
+                    brands.Add(brand);
+                }
+            }
+        }
+        
+        connection.Close();
+        
+        return new OkObjectResult(brands);
     }
 
     public IActionResult AddBrandToProduct(Product product, Brand brand)
@@ -543,11 +639,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult EditProductPhoto(ProductPhoto productPhoto)
-    {
-        throw new NotImplementedException();
-    }
-
     public IActionResult DeleteProductPhoto(ProductPhoto productPhoto)
     {
         connection.Open();
@@ -578,9 +669,37 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult EditProductPhoto(Product product, ProductPhoto productPhoto)
+    public IActionResult EditProductPhoto(ProductPhoto productPhoto)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query =
+            @"update product_photo set
+                   photo_url = $2 where id = $1";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = productPhoto.Id},
+                new() {Value = productPhoto.PhotoPath}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult AddProductPhotos(Product product, List<ProductPhoto> productPhotos)
@@ -602,7 +721,16 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult SetProductPhotos(Product product, List<ProductPhoto> productPhotos)
     {
-        throw new NotImplementedException();
+        try
+        {
+            ClearProductPhotos(product);
+            AddProductPhotos(product, productPhotos);
+            return new AcceptedResult();
+        }
+        catch
+        {
+            return new BadRequestResult();
+        }
     }
 
     public IActionResult ClearProductPhotos(Product product)
@@ -637,7 +765,47 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult AddNewProductPrice(Product product, ProductPrice productPrice)
     {
-        throw new NotImplementedException();
+        try
+        {
+            product.CurrentPrice = productPrice.Price;
+            UpdateProduct(product);
+            
+            connection.Open();
+            // запрос
+            string query = @"insert into product_price(price, datetime, product_id, customer_id)
+                            VALUES ($1, $2, $3, $4)";
+        
+            // дополняем запрос параметрами
+            NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+            {
+                Parameters =
+                {
+                    new() { Value = productPrice.Price},
+                    new() { Value = DateTime.Now},
+                    new() { Value = product.Id},
+                    new() { Value = productPrice.Customer.Id}
+                }
+            };
+            // пробуем выолнить
+            try
+            {
+                return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+            }
+            // что-то не так с данными
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.ToString());
+            }
+            finally
+            {
+                connection.Close();
+            }
+            
+        }
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
     }
 
     public IActionResult DeleteProductPrice(ProductPrice productPrice)
@@ -672,17 +840,119 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult GetOrder(int id)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        Order order = new Order();
+        
+        // запрос
+        string query = @"select * from order where id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    // перенос значений из строки базы данных в объект класса
+                    order.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    order.DateTimeOfCreation = reader.GetDateTime(reader.GetOrdinal("datetime_of_creation"));
+                    order.TotalCost = reader.GetDecimal(reader.GetOrdinal("total_cost"));
+                    order.Client.Id = reader.GetInt32(reader.GetOrdinal("client_id"));
+                }
+            }
+        }
+        
+        connection.Close();
+
+        OkObjectResult ok = GetClient(order.Client.Id) as OkObjectResult;
+        order.Client = ok.Value as Client;
+        
+        return new OkObjectResult(order);
     }
 
     public IActionResult GetOrders()
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<Order> orders = new List<Order>();
+        
+        // запрос
+        string query = @"select * from order";
+        
+        // выполняем команду
+        using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    Order order = new Order();
+                    // перенос значений из строки базы данных в объект класса
+                    order.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    order.DateTimeOfCreation = reader.GetDateTime(reader.GetOrdinal("datetime_of_creation"));
+                    order.TotalCost = reader.GetDecimal(reader.GetOrdinal("total_cost"));
+                    order.Client.Id = reader.GetInt32(reader.GetOrdinal("client_id"));
+                    // сохранение объекта в списке
+                    orders.Add(order);
+                }
+            }
+        }
+        
+        connection.Close();
+
+        foreach (var order in orders)
+        {
+            OkObjectResult ok = GetClient(order.Client.Id) as OkObjectResult;
+            order.Client = ok.Value as Client;
+        }
+        
+        return new OkObjectResult(orders);
     }
 
     public IActionResult AddOrder(Order order)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query = @"insert into order(client_id, datetime_of_creation, total_cost) VALUES ($1, $2, $3)";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = order.Client.Id},
+                new() { Value = DateTime.Now},
+                new() { Value = order.TotalCost}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult DeleteOrder(Order order)
@@ -722,25 +992,129 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult EditOrder(Order order)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query =
+            @"update order set
+                   client_id = $2, total_cost = $3 where id = $1";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = order.Id},
+                new() {Value = order.Client.Id},
+                new() {Value = order.TotalCost}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult GetOrderProducts(Order order)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+
+        List<OrderProducts> orderProductsList = new List<OrderProducts>();
+
+        // запрос
+        string query = @"select * from order_products where order_id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = order.Id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    OrderProducts orderProducts = new OrderProducts();
+                    orderProducts.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    orderProducts.Order.Id = reader.GetInt32(reader.GetOrdinal("order_id"));
+                    orderProducts.Product.Id = reader.GetInt32(reader.GetOrdinal("product_id"));
+                    orderProducts.Count = reader.GetInt32(reader.GetOrdinal("count"));
+                    orderProducts.PriceForOne = reader.GetDecimal(reader.GetOrdinal("price_for_one"));
+                    orderProductsList.Add(orderProducts);
+                }
+            }
+        }
+        
+        connection.Close();
+
+        return new OkObjectResult(orderProductsList);
     }
 
-    public IActionResult AddProductToOrder(Order order, Product product)
+    public IActionResult AddProductToOrder(OrderProducts orderProducts)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query = @"insert into order_products(order_id, product_id, count, price_for_one) VALUES ($1, $2, $3, $4)";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = orderProducts.Order.Id},
+                new() { Value = orderProducts.Product.Id},
+                new() { Value = orderProducts.Count},
+                new() { Value = orderProducts.PriceForOne}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
-    public IActionResult AddProductsToOrder(Order order, List<Product> products)
+    public IActionResult AddProductsToOrder(List<OrderProducts> orderProductsList)
     {
-        throw new NotImplementedException();
+        try
+        {
+            foreach (var pr in orderProductsList)
+            {
+                AddProductToOrder(pr);
+            }
+
+            return new OkResult();
+        }
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
     }
 
-    public IActionResult DeleteProductFromOrder(Order order, Product product)
+    public IActionResult DeleteProductFromOrder(OrderProducts orderProducts)
     {
         connection.Open();
         // запрос
@@ -750,8 +1124,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() { Value = order.Id},
-                new() {Value = product.Id},
+                new() { Value = orderProducts.Order.Id},
+                new() {Value = orderProducts.Product.Id},
             }
         };
         // пробуем выолнить
@@ -770,10 +1144,21 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             connection.Close();
         }
     }
-    
-    public IActionResult SetOrderProducts(Order order, List<OrderProducts> orderProducts)
+
+    public IActionResult SetOrderProducts(List<OrderProducts> orderProductsList)
     {
-        throw new NotImplementedException();
+        try
+        {
+            // очищаем список продуктов в заказе
+            ClearOrderProducts(orderProductsList.ElementAt(0).Order);
+            // добавляем продукты в заказ
+            AddProductsToOrder(orderProductsList);
+            return new OkResult();
+        }
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
     }
 
     public IActionResult ClearOrderProducts(Order order)
@@ -808,7 +1193,33 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult AddStatus(OrderStatus orderStatus)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query = @"insert into order_status(name, description) VALUES ($1, $2)";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = orderStatus.Name},
+                new() { Value = orderStatus.Description == null ? DBNull.Value : orderStatus.Description}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult DeleteStatus(OrderStatus orderStatus)
@@ -843,12 +1254,66 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult EditOrderStatus(OrderStatus orderStatus)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query =
+            @"update order_status set
+                   name = $2 where id = $1";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = orderStatus.Id},
+                new() {Value = orderStatus.Name}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult AddOrderStatus(Order order, OrderStatus orderStatus)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query = @"insert into order_statuses(order_id, order_status_id) VALUES ($1, $2)";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = order.Id},
+                new() { Value = orderStatus.Id}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult DeleteOrderStatus(Order order, OrderStatus orderStatus)
@@ -884,17 +1349,104 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult GetCustomer(int id)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+
+        Customer customer = new Customer();
+        
+        // запрос
+        string query = @"select * from customer where id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    // перенос значений из строки базы данных в объект класса
+                    customer.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    customer.Name = reader.GetString(reader.GetOrdinal("name"));
+                    customer.PhotoUrl = reader.GetString(reader.GetOrdinal("photo_url"));
+                }
+            }
+        }
+        
+        connection.Close();
+
+        return new OkObjectResult(customer);
     }
 
     public IActionResult AddCustomer(Customer customer)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query = @"insert into customer(name, photo_url) VALUES ($1, $2)";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = customer.Name},
+                new() { Value = customer.PhotoUrl == null ? DBNull.Value : customer.PhotoUrl}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult EditCustomer(Customer customer)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query =
+            @"update customer set
+                   name = $2, photo_url = $3 where id = $1";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() { Value = customer.Id},
+                new() {Value = customer.Name},
+                new() {Value = customer.PhotoUrl == null ? DBNull.Value : customer.PhotoUrl}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult DeleteCustomer(Customer customer)
@@ -934,32 +1486,255 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult GetCustomerProducts(Customer customer)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+
+        List<ProductCustomer> productCustomers = new List<ProductCustomer>();
+
+        // запрос
+        string query = @"select * from product_customer where customer_id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = customer.Id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    ProductCustomer productCustomer = new ProductCustomer();
+                    productCustomer.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    productCustomer.Customer.Id = reader.GetInt32(reader.GetOrdinal("customer_id"));
+                    productCustomer.Product.Id = reader.GetInt32(reader.GetOrdinal("product_id"));
+                    productCustomers.Add(productCustomer);
+                }
+            }
+        }
+        
+        connection.Close();
+
+        return new OkObjectResult(productCustomers);
     }
 
     public IActionResult GetClient(int id)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+
+        Client client = new Client();
+        
+        // запрос
+        string query = @"select * from client where id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    // перенос значений из строки базы данных в объект класса
+                    client.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    client.DateTimeOfRegistration = reader.GetDateTime(reader.GetOrdinal("datetime_of_registration"));
+                    client.Email = reader.GetString(reader.GetOrdinal("email"));
+                    client.PhoneNumber = reader.GetString(reader.GetOrdinal("phone_number"));
+                    client.Password = reader.GetString(reader.GetOrdinal("password"));
+                    client.FirstName = reader.GetString(reader.GetOrdinal("first_name"));
+                    client.LastName = reader.GetString(reader.GetOrdinal("last_name"));
+                    client.Token = reader.GetString(reader.GetOrdinal("token"));
+                }
+            }
+        }
+        
+        connection.Close();
+
+        return new OkObjectResult(client);
     }
 
     public IActionResult GetClient(string token)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+
+        Client client = new Client();
+        
+        // запрос
+        string query = @"select * from client where token = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = token}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    // перенос значений из строки базы данных в объект класса
+                    client.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    client.DateTimeOfRegistration = reader.GetDateTime(reader.GetOrdinal("datetime_of_registration"));
+                    client.Email = reader.GetString(reader.GetOrdinal("email"));
+                    client.PhoneNumber = reader.GetString(reader.GetOrdinal("phone_number"));
+                    client.Password = reader.GetString(reader.GetOrdinal("password"));
+                    client.FirstName = reader.GetString(reader.GetOrdinal("first_name"));
+                    client.LastName = reader.GetString(reader.GetOrdinal("last_name"));
+                    client.Token = reader.GetString(reader.GetOrdinal("token"));
+                }
+            }
+        }
+        
+        connection.Close();
+
+        return new OkObjectResult(client);
     }
 
     public IActionResult GetClientOrders(Client client)
     {
-        throw new NotImplementedException();
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<Order> orders = new List<Order>();
+        
+        // запрос
+        string query = @"select * from order where client_id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = client.Id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    Order order = new Order();
+                    // перенос значений из строки базы данных в объект класса
+                    order.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    order.DateTimeOfCreation = reader.GetDateTime(reader.GetOrdinal("datetime_of_creation"));
+                    order.TotalCost = reader.GetDecimal(reader.GetOrdinal("total_cost"));
+                    orders.Add(order);
+                }
+            }
+        }
+        
+        connection.Close();
+
+        foreach (var order in orders)
+        {
+            OkObjectResult ok = GetClient(client.Id) as OkObjectResult;
+            order.Client = ok.Value as Client;
+        }
+        
+        return new OkObjectResult(orders);
     }
 
     public IActionResult AddClient(Client client)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query =
+            @"insert into client(
+                   datetime_of_registration,
+                   email, phone_number,
+                   password, first_name,
+                   last_name, token)
+                           values ($1, $2, $3, $4, $5, $6, $7)";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() {Value = client.DateTimeOfRegistration == null ? DBNull.Value : client.DateTimeOfRegistration.Value},
+                new() {Value = client.Email == null ? DBNull.Value : client.Email},
+                new(){Value = client.PhoneNumber == null ? DBNull.Value : client.PhoneNumber},
+                new(){Value = client.Password == null ? DBNull.Value : client.Password},
+                new(){Value = client.FirstName == null ? DBNull.Value : client.FirstName},
+                new(){Value = client.LastName == null ? DBNull.Value : client.LastName},
+                new(){Value = client.Token}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            cmd.ExecuteNonQuery();
+            return new AcceptedResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestResult();
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult EditClient(Client client)
     {
-        throw new NotImplementedException();
+        connection.Open();
+        // запрос
+        string query =
+            @"update client set
+                   datetime_of_registration = $2,
+                   email = $3, phone_number = $4,
+                   password =$5, first_name = $6,
+                   last_name = $7, token = $8 where id = $1";
+        
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() {Value = client.Id},
+                new() {Value = client.DateTimeOfRegistration == null ? DBNull.Value : client.DateTimeOfRegistration.Value},
+                new() {Value = client.Email == null ? DBNull.Value : client.Email},
+                new() {Value = client.PhoneNumber == null ? DBNull.Value : client.PhoneNumber},
+                new() {Value = client.Password == null ? DBNull.Value : client.Password},
+                new() {Value = client.FirstName == null ? DBNull.Value : client.FirstName},
+                new() {Value = client.LastName == null ? DBNull.Value : client.LastName},
+                new() {Value = client.Token}
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+        }
+        // что-то не так с данными
+        catch (Exception e)
+        {
+            return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
     }
 
     public IActionResult DeleteClient(Client client)
