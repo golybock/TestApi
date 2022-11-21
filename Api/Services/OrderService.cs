@@ -75,6 +75,11 @@ public class OrderService : IOrderService
         return _productRepository.ClearOrderProducts(order);
     }
 
+    public IActionResult GetStatuses()
+    {
+        return _productRepository.GetStatuses();
+    }
+
     public IActionResult AddStatus(OrderStatus orderStatus)
     {
         return _productRepository.AddStatus(orderStatus);
@@ -88,6 +93,11 @@ public class OrderService : IOrderService
     public IActionResult EditOrderStatus(OrderStatus orderStatus)
     {
         return _productRepository.EditOrderStatus(orderStatus);
+    }
+
+    public IActionResult GetOrderStatuses(Order order)
+    {
+        return _productRepository.GetOrderStatuses(order);
     }
 
     public IActionResult AddOrderStatus(OrderStatuses orderStatuses)

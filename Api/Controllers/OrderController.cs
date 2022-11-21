@@ -93,6 +93,12 @@ public class OrderController : Controller, IOrderService
         return _orderService.ClearOrderProducts(order);
     }
     
+    [HttpGet("GetStatuses")]
+    public IActionResult GetStatuses()
+    {
+        return _orderService.GetStatuses();
+    }
+
     [HttpPost("AddStatus")]
     public IActionResult AddStatus(OrderStatus orderStatus)
     {
@@ -111,6 +117,12 @@ public class OrderController : Controller, IOrderService
         return _orderService.EditOrderStatus(orderStatus);
     }
     
+    [HttpGet("GetOrderStatuses")]
+    public IActionResult GetOrderStatuses(Order order)
+    {
+        return _orderService.GetOrderStatuses(order);
+    }
+
     [HttpPost("AddOrderStatus")]
     public IActionResult AddOrderStatus(OrderStatuses orderStatuses)
     {

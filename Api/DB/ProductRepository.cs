@@ -1,4 +1,5 @@
-﻿using Api.Models.Client;
+﻿using System.Data;
+using Api.Models.Client;
 using Api.Models.Customer;
 using Api.Models.Order;
 using Api.Models.Product;
@@ -207,6 +208,78 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             connection.Close();
         }
+    }
+
+    public IActionResult GetCategory(int id)
+    {
+        // открываем подкючение к бд
+        connection.Open();
+
+        Category category = new Category();
+        
+        // запрос
+        string query = @"select * from product_category where id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    category.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    category.Name = reader.GetString(reader.GetOrdinal("name"));
+                    var description = reader.GetValue(reader.GetOrdinal("description"));
+                    category.Description = description == DBNull.Value ? null : description.ToString();
+                }
+            }
+        }
+        
+        connection.Close();
+        
+        return new OkObjectResult(category);
+    }
+
+    public IActionResult GetCategories()
+    {
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<Category> categories = new List<Category>();
+        
+        // запрос
+        string query = @"select * from product_category";
+        
+        // выполняем команду
+        using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    Category category = new Category();
+                    category.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    category.Name = reader.GetString(reader.GetOrdinal("name"));
+                    var description = reader.GetValue(reader.GetOrdinal("description"));
+                    category.Description = description == DBNull.Value ? null : description.ToString();
+                    categories.Add(category);
+                }
+            }
+        }
+        
+        connection.Close();
+        
+        return new OkObjectResult(categories);
     }
 
     // категория продукта
@@ -434,7 +507,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                     // перенос значений из строки базы данных в объект класса
                     brand.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     brand.Name = reader.GetString(reader.GetOrdinal("name"));
-                    brand.PhotoUrl = reader.GetString(reader.GetOrdinal("photo_url"));
+                    var photoUrl = reader.GetValue(reader.GetOrdinal("photo_url"));
+                    brand.PhotoUrl = photoUrl == DBNull.Value ? null : photoUrl.ToString();
                     brands.Add(brand);
                 }
             }
@@ -469,7 +543,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                     // перенос значений из строки базы данных в объект класса
                     brand.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     brand.Name = reader.GetString(reader.GetOrdinal("name"));
-                    brand.PhotoUrl = reader.GetString(reader.GetOrdinal("photo_url"));
+                    var photoUrl = reader.GetValue(reader.GetOrdinal("photo_url"));
+                    brand.PhotoUrl = photoUrl == DBNull.Value ? null : photoUrl.ToString();
                     brands.Add(brand);
                 }
             }
@@ -602,6 +677,45 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             connection.Close();
         }
+    }
+
+    public IActionResult GetProductPhotos(Product product)
+    {
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<ProductPhoto> productPhotos = new List<ProductPhoto>();
+
+        // запрос
+        string query = @"select * from product_photo where id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = product.Id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    ProductPhoto productPhoto = new ProductPhoto();
+                    productPhoto.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    productPhoto.PhotoPath = reader.GetString(reader.GetOrdinal("photo_url"));
+                    productPhoto.Product.Id = reader.GetInt32(reader.GetOrdinal("product_id"));
+                    productPhotos.Add(productPhoto);
+                }
+            }
+        }
+        
+        connection.Close();
+        
+        return new OkObjectResult(productPhotos);
     }
 
     public IActionResult AddProductPhoto(ProductPhoto productPhoto)
@@ -846,7 +960,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         Order order = new Order();
         
         // запрос
-        string query = @"select * from order where id = $1";
+        string query = @"select * from client_order where id = $1";
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
@@ -888,7 +1002,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         List<Order> orders = new List<Order>();
         
         // запрос
-        string query = @"select * from order";
+        string query = @"select * from client_order";
         
         // выполняем команду
         using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
@@ -926,7 +1040,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         connection.Open();
         // запрос
-        string query = @"insert into order(client_id, datetime_of_creation, total_cost) VALUES ($1, $2, $3)";
+        string query = @"insert into client_order(client_id, datetime_of_creation, total_cost) VALUES ($1, $2, $3)";
         
         // дополняем запрос параметрами
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
@@ -963,7 +1077,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         connection.Open();
         // запрос
-        string query = @"delete from order where id = $1";
+        string query = @"delete from client_order where id = $1";
         // дополняем запрос параметрами
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
@@ -994,7 +1108,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         connection.Open();
         // запрос
         string query =
-            @"update order set
+            @"update client_order set
                    client_id = $2, total_cost = $3 where id = $1";
         
         // дополняем запрос параметрами
@@ -1190,6 +1304,41 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
+    public IActionResult GetStatuses()
+    {
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<OrderStatus> orderStatuses = new List<OrderStatus>();
+
+        // запрос
+        string query = @"select * from order_status";
+        
+        // выполняем команду
+        using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    OrderStatus orderStatus = new OrderStatus();
+                    orderStatus.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    orderStatus.Name = reader.GetString(reader.GetOrdinal("name"));
+                    var description = reader.GetValue(reader.GetOrdinal("description"));
+                    orderStatus.Description = description == DBNull.Value ? null : description.ToString();
+                    orderStatuses.Add(orderStatus);
+                }
+            }
+        }
+        
+        connection.Close();
+        
+        return new OkObjectResult(orderStatuses);
+    }
+
     public IActionResult AddStatus(OrderStatus orderStatus)
     {
         connection.Open();
@@ -1282,6 +1431,45 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             connection.Close();
         }
+    }
+
+    public IActionResult GetOrderStatuses(Order order)
+    {
+        // открываем подкючение к бд
+        connection.Open();
+        
+        // для хранения продуктов из бд в виде объектов
+        List<OrderStatuses> orderStatuses = new List<OrderStatuses>();
+
+        // запрос
+        string query = @"select * from order_statuses where order_id = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = order.Id}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    OrderStatuses orderStatus = new OrderStatuses();
+                    orderStatus.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    orderStatus.Order.Id = reader.GetInt32(reader.GetOrdinal("order_id"));
+                    orderStatus.OrderStatus.Id = reader.GetInt32(reader.GetOrdinal("order_status_id"));
+                    orderStatuses.Add(orderStatus);
+                }
+            }
+        }
+        
+        connection.Close();
+        
+        return new OkObjectResult(orderStatuses);
     }
 
     public IActionResult AddOrderStatus(OrderStatuses orderStatus)
@@ -1545,15 +1733,21 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 // проход по всем строкам таблицы
                 while (reader.Read())
                 {
-                    // перенос значений из строки базы данных в объект класса
                     client.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     client.DateTimeOfRegistration = reader.GetDateTime(reader.GetOrdinal("datetime_of_registration"));
-                    client.Email = reader.GetString(reader.GetOrdinal("email"));
-                    client.PhoneNumber = reader.GetString(reader.GetOrdinal("phone_number"));
-                    client.Password = reader.GetString(reader.GetOrdinal("password"));
-                    client.FirstName = reader.GetString(reader.GetOrdinal("first_name"));
-                    client.LastName = reader.GetString(reader.GetOrdinal("last_name"));
                     client.Token = reader.GetString(reader.GetOrdinal("token"));
+                    
+                    var email = reader.GetValue(reader.GetOrdinal("email"));
+                    var phoneNumber = reader.GetValue(reader.GetOrdinal("phone_number"));
+                    var password = reader.GetValue(reader.GetOrdinal("password"));
+                    var firstName = reader.GetValue(reader.GetOrdinal("first_name"));
+                    var lastName = reader.GetValue(reader.GetOrdinal("last_name"));
+
+                    client.Email = email == DBNull.Value ? null : email.ToString();
+                    client.PhoneNumber = phoneNumber == DBNull.Value ? null : phoneNumber.ToString();
+                    client.Password = password == DBNull.Value ? null : password.ToString();
+                    client.FirstName = firstName == DBNull.Value ? null : firstName.ToString();
+                    client.LastName = lastName == DBNull.Value ? null : lastName.ToString();
                 }
             }
         }
@@ -1587,15 +1781,21 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 // проход по всем строкам таблицы
                 while (reader.Read())
                 {
-                    // перенос значений из строки базы данных в объект класса
                     client.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     client.DateTimeOfRegistration = reader.GetDateTime(reader.GetOrdinal("datetime_of_registration"));
-                    client.Email = reader.GetString(reader.GetOrdinal("email"));
-                    client.PhoneNumber = reader.GetString(reader.GetOrdinal("phone_number"));
-                    client.Password = reader.GetString(reader.GetOrdinal("password"));
-                    client.FirstName = reader.GetString(reader.GetOrdinal("first_name"));
-                    client.LastName = reader.GetString(reader.GetOrdinal("last_name"));
                     client.Token = reader.GetString(reader.GetOrdinal("token"));
+                    
+                    var email = reader.GetValue(reader.GetOrdinal("email"));
+                    var phoneNumber = reader.GetValue(reader.GetOrdinal("phone_number"));
+                    var password = reader.GetValue(reader.GetOrdinal("password"));
+                    var firstName = reader.GetValue(reader.GetOrdinal("first_name"));
+                    var lastName = reader.GetValue(reader.GetOrdinal("last_name"));
+
+                    client.Email = email == DBNull.Value ? null : email.ToString();
+                    client.PhoneNumber = phoneNumber == DBNull.Value ? null : phoneNumber.ToString();
+                    client.Password = password == DBNull.Value ? null : password.ToString();
+                    client.FirstName = firstName == DBNull.Value ? null : firstName.ToString();
+                    client.LastName = lastName == DBNull.Value ? null : lastName.ToString();
                 }
             }
         }
@@ -1614,7 +1814,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         List<Order> orders = new List<Order>();
         
         // запрос
-        string query = @"select * from order where client_id = $1";
+        string query = @"select * from client_order where client_id = $1";
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {

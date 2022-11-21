@@ -21,10 +21,12 @@ public interface IOrderService
     public IActionResult SetOrderProducts(List<OrderProducts> orderProductsList);
     public IActionResult ClearOrderProducts(Order order);
     // order status
+    public IActionResult GetStatuses();
     public IActionResult AddStatus(OrderStatus orderStatus);
     public IActionResult DeleteStatus(OrderStatus orderStatus);
     public IActionResult EditOrderStatus(OrderStatus orderStatus);
     // order statuses
+    public IActionResult GetOrderStatuses(Order order);
     public IActionResult AddOrderStatus(OrderStatuses orderStatuses);
     public IActionResult DeleteOrderStatus(OrderStatuses orderStatuses);
 }

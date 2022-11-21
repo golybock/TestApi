@@ -54,6 +54,18 @@ public class ProductsController : Controller, IProductsService
         return _productsService.UpdateProduct(product);
     }
     
+    [HttpGet("GetCategory")]
+    public IActionResult GetCategory(int id)
+    {
+        return _productsService.GetCategory(id);
+    }
+    
+    [HttpGet("GetCategories")]
+    public IActionResult GetCategories()
+    {
+        return _productsService.GetCategories();
+    }
+
     [HttpPost("AddProductCategory")]
     public IActionResult AddProductCategory(Category category)
     {
@@ -130,6 +142,12 @@ public class ProductsController : Controller, IProductsService
     public IActionResult ClearProductBrands(Product product)
     {
         return _productsService.ClearProductBrands(product);
+    }
+    
+    [HttpGet("GetProductPhotos")]
+    public IActionResult GetProductPhotos(Product product)
+    {
+        return _productsService.GetProductPhotos(product);
     }
 
     [HttpPost("AddProductPhoto")]
