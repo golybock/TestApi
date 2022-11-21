@@ -606,11 +606,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult AddProductPhoto(ProductPhoto productPhoto)
     {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult AddProductPhoto(Product product, ProductPhoto productPhoto)
-    {
         connection.Open();
         // запрос
         string query =
@@ -621,7 +616,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = product.Id},
+                new() {Value = productPhoto.Product.Id},
                 new() {Value = productPhoto.PhotoPath}
             }
         };
@@ -634,7 +629,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         // что-то не так с данными
         catch (Exception e)
         {
-            // Console.WriteLine(e.ToString());
             return new BadRequestResult();
         }
         finally
@@ -642,7 +636,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             connection.Close();
         }
     }
-
+    
     public IActionResult DeleteProductPhoto(ProductPhoto productPhoto)
     {
         connection.Open();
@@ -708,21 +702,11 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult AddProductPhotos(List<ProductPhoto> productPhotos)
     {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult SetProductPhotos(List<ProductPhoto> productPhotos)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult AddProductPhotos(Product product, List<ProductPhoto> productPhotos)
-    {
         try
         {
             foreach (var photo in productPhotos)
             {
-                AddProductPhoto(product, photo);
+                AddProductPhoto(photo);
             }
 
             return new AcceptedResult();
@@ -733,12 +717,12 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult SetProductPhotos(Product product, List<ProductPhoto> productPhotos)
+    public IActionResult SetProductPhotos(List<ProductPhoto> productPhotos)
     {
         try
         {
-            ClearProductPhotos(product);
-            AddProductPhotos(product, productPhotos);
+            ClearProductPhotos(productPhotos.ElementAt(0).Product);
+            AddProductPhotos(productPhotos);
             return new AcceptedResult();
         }
         catch
@@ -746,7 +730,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             return new BadRequestResult();
         }
     }
-
+    
     public IActionResult ClearProductPhotos(Product product)
     {
         connection.Open();
@@ -779,15 +763,11 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
     public IActionResult AddNewProductPrice(ProductPrice productPrice)
     {
-        throw new NotImplementedException();
-    }
-
-    public IActionResult AddNewProductPrice(Product product, ProductPrice productPrice)
-    {
         try
         {
-            product.CurrentPrice = productPrice.Price;
-            UpdateProduct(product);
+            // обновляем цену продукта
+            productPrice.Product.CurrentPrice = productPrice.Price;
+            UpdateProduct(productPrice.Product);
             
             connection.Open();
             // запрос
@@ -801,7 +781,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 {
                     new() { Value = productPrice.Price},
                     new() { Value = DateTime.Now},
-                    new() { Value = product.Id},
+                    new() { Value = productPrice.Product.Id},
                     new() { Value = productPrice.Customer.Id}
                 }
             };
