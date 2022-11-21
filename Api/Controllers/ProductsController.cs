@@ -30,18 +30,12 @@ public class ProductsController : Controller, IProductsService
         return _productsService.GetProductById(id);
     }
     
-    [HttpPost("DeleteProductById")]
+    [HttpPost("DeleteProduct")]
     public IActionResult DeleteProduct(int id)
     {
         return _productsService.DeleteProduct(id);
     }
-    
-    [HttpPost("DeleteProductByObject")]
-    public IActionResult DeleteProduct(Product product)
-    {
-        return _productsService.DeleteProduct(product);
-    }
-    
+
     [HttpPost("AddProduct")]
     public IActionResult AddProduct(Product product)
     {

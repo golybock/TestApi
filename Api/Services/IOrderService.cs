@@ -10,7 +10,6 @@ public interface IOrderService
     public IActionResult GetOrder(int id);
     public IActionResult GetOrders();
     public IActionResult AddOrder(Order order);
-    public IActionResult DeleteOrder(Order order);
     public IActionResult DeleteOrder(int id);
     public IActionResult EditOrder(Order order);
     // order products

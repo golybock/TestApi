@@ -127,12 +127,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
         
     }
-
-    public IActionResult DeleteProduct(Product product)
-    {
-        return DeleteProduct(product.Id);
-    }
-
+    
     public IActionResult AddProduct(Product product)
     {
         connection.Open();
@@ -1066,12 +1061,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             connection.Close();
         }
     }
-
-    public IActionResult DeleteOrder(Order order)
-    {
-        return DeleteOrder(order.Id);
-    }
-
+    
     public IActionResult DeleteOrder(int id)
     {
         connection.Open();
@@ -1634,12 +1624,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             connection.Close();
         }
     }
-
-    public IActionResult DeleteCustomer(Customer customer)
-    {
-        return DeleteCustomer(customer.Id);
-    }
-
+    
     public IActionResult DeleteCustomer(int id)
     {
         connection.Open();
@@ -1933,11 +1918,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             connection.Close();
         }
-    }
-
-    public IActionResult DeleteClient(Client client)
-    {
-        return DeleteClient(client.Id);
     }
 
     public IActionResult DeleteClient(int id)

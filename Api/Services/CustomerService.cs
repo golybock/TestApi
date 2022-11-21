@@ -30,11 +30,6 @@ public class CustomerService : ICustomerService
         return _productRepository.EditCustomer(customer);
     }
 
-    public IActionResult DeleteCustomer(Customer customer)
-    {
-        return _productRepository.DeleteCustomer(customer);
-    }
-
     public IActionResult DeleteCustomer(int id)
     {
         return _productRepository.DeleteCustomer(id);

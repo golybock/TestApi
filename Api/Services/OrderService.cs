@@ -30,11 +30,6 @@ public class OrderService : IOrderService
         return _productRepository.AddOrder(order);
     }
 
-    public IActionResult DeleteOrder(Order order)
-    {
-        return _productRepository.DeleteOrder(order);
-    }
-
     public IActionResult DeleteOrder(int id)
     {
         return _productRepository.DeleteOrder(id);

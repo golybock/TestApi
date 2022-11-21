@@ -9,7 +9,6 @@ public interface IProductsService
     public IActionResult GetProducts();
     public IActionResult GetProductById(int id);
     public IActionResult DeleteProduct(int id);
-    public IActionResult DeleteProduct(Product product);
     public IActionResult AddProduct(Product product);
     public IActionResult UpdateProduct(Product product);
     // category

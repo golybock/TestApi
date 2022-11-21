@@ -39,12 +39,7 @@ public class ClientService : IClientService
     {
         return _productRepository.EditClient(client);
     }
-
-    public IActionResult DeleteClient(Client client)
-    {
-        return _productRepository.DeleteClient(client);
-    }
-
+    
     public IActionResult DeleteClient(int id)
     {
         return _productRepository.DeleteClient(id);

@@ -30,12 +30,7 @@ public class ProductsService : IProductsService
     {
         return _productRepository.DeleteProduct(id);
     }
-
-    public IActionResult DeleteProduct(Product product)
-    {
-        return _productRepository.DeleteProduct(product);
-    }
-
+    
     public IActionResult AddProduct(Product product)
     {
         return _productRepository.AddProduct(product);

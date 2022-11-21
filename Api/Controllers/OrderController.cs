@@ -35,13 +35,7 @@ public class OrderController : Controller, IOrderService
         return _orderService.AddOrder(order);
     }
     
-    [HttpPost("DeleteOrderByObject")]
-    public IActionResult DeleteOrder(Order order)
-    {
-        return _orderService.DeleteOrder(order);
-    }
-    
-    [HttpPost("DeleteOrderById")]
+    [HttpPost("DeleteOrder")]
     public IActionResult DeleteOrder(int id)
     {
         return _orderService.DeleteOrder(id);

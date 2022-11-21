@@ -52,13 +52,7 @@ namespace Api.Controllers
             return _clientService.EditClient(client);
         }
         
-        [HttpPost("DeleteClientByObject")]
-        public IActionResult DeleteClient(Client client)
-        {
-            return _clientService.DeleteClient(client);
-        }
-        
-        [HttpPost("DeleteClientById")]
+        [HttpPost("DeleteClient")]
         public IActionResult DeleteClient(int id)
         {
             return _clientService.DeleteClient(id);
