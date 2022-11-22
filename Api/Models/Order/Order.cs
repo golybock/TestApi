@@ -8,6 +8,7 @@ public class Order
     {
         Client = new Client.Client();
         DateTimeOfCreation = new DateTime();
+        OrderProductsList = new List<OrderProducts>();
     }
 
     public Order(int id, Client.Client client, DateTime dateTimeOfCreation, decimal totalCost)
@@ -25,4 +26,5 @@ public class Order
     public DateTime DateTimeOfCreation { get; set; }
 
     public decimal TotalCost { get; set; } = 0;
+    public List<OrderProducts> OrderProductsList { get; set; }
 }

@@ -54,6 +54,12 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
         
         connection.Close();
+
+        foreach (var pr in products)
+        {
+            var ok = GetCategory(pr.Category.Id) as OkObjectResult;
+            pr.Category = ok.Value as Category;
+        }
         
         return new OkObjectResult(products);
     }
@@ -93,6 +99,9 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
         
         connection.Close();
+        
+        var ok = GetCategory(product.Category.Id) as OkObjectResult;
+        product.Category = ok.Value as Category;
         
         return new OkObjectResult(product);
     }
@@ -980,10 +989,15 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
         
         connection.Close();
+        
+        
 
         OkObjectResult ok = GetClient(order.Client.Id) as OkObjectResult;
         order.Client = ok.Value as Client;
         
+        OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
+        order.OrderProductsList = products.Value as List<OrderProducts>;
+
         return new OkObjectResult(order);
     }
 
@@ -1025,6 +1039,10 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             OkObjectResult ok = GetClient(order.Client.Id) as OkObjectResult;
             order.Client = ok.Value as Client;
+            
+            OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
+            order.OrderProductsList = products.Value as List<OrderProducts>;
+
         }
         
         return new OkObjectResult(orders);
@@ -1162,6 +1180,12 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
         
         connection.Close();
+
+        foreach (var orpr in orderProductsList)
+        {
+            OkObjectResult ok = GetProductById(orpr.Product.Id) as OkObjectResult;
+            orpr.Product = ok.Value as Product;
+        }
 
         return new OkObjectResult(orderProductsList);
     }
@@ -1457,6 +1481,16 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
         
         connection.Close();
+
+        foreach (var orderStatus in orderStatuses)
+        {
+            OkObjectResult orderstat = GetStatuses() as OkObjectResult;
+            var statuses = orderstat.Value as List<OrderStatus>;
+            orderStatus.OrderStatus = statuses.Where(c => c.Id == orderStatus.OrderStatus.Id).FirstOrDefault();
+            
+            OkObjectResult order = GetOrder(orderStatus.Order.Id) as OkObjectResult;
+            orderStatus.Order = order.Value as Order;
+        }
         
         return new OkObjectResult(orderStatuses);
     }
@@ -1690,6 +1724,15 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         
         connection.Close();
 
+        foreach (var product in productCustomers)
+        {
+            OkObjectResult customer = GetCustomer(product.Customer.Id) as OkObjectResult;
+            product.Customer = customer.Value as Customer;
+            
+            OkObjectResult prod = GetProductById(product.Product.Id) as OkObjectResult;
+            product.Product = prod.Value as Product;
+        }
+
         return new OkObjectResult(productCustomers);
     }
 
@@ -1830,6 +1873,9 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             OkObjectResult ok = GetClient(id) as OkObjectResult;
             order.Client = ok.Value as Client;
+            
+            OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
+            order.OrderProductsList = ok.Value as List<OrderProducts>;
         }
         
         return new OkObjectResult(orders);
