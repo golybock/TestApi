@@ -14,35 +14,42 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase, ICustomerService
-    {
+    {    
+        private CustomerService _customerService;
+    
+        public CustomerController(IConfiguration configuration)
+        {
+            _customerService = new CustomerService(configuration);
+        }
+        
+        [HttpGet("GetCustomer")]
         public IActionResult GetCustomer(int id)
         {
-            throw new NotImplementedException();
+            return _customerService.GetCustomer(id);
         }
-
+        
+        [HttpPost("AddCustomer")]
         public IActionResult AddCustomer(Customer customer)
         {
-            throw new NotImplementedException();
+            return _customerService.AddCustomer(customer);
         }
-
+        
+        [HttpPost("EditCustomer")]
         public IActionResult EditCustomer(Customer customer)
         {
-            throw new NotImplementedException();
+            return _customerService.EditCustomer(customer);
         }
-
-        public IActionResult DeleteCustomer(Customer customer)
-        {
-            throw new NotImplementedException();
-        }
-
+        
+        [HttpPost("DeleteCustomer")]
         public IActionResult DeleteCustomer(int id)
         {
-            throw new NotImplementedException();
+            return _customerService.DeleteCustomer(id);
         }
-
+        
+        [HttpGet("GetCustomerProducts")]
         public IActionResult GetCustomerProducts(int id)
         {
-            throw new NotImplementedException();
+            return _customerService.GetCustomerProducts(id);
         }
     }
 }
