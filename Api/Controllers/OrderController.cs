@@ -78,9 +78,9 @@ public class OrderController : Controller, IOrderService
     }
     
     [HttpPost("ClearOrderProducts")]
-    public IActionResult ClearOrderProducts(Order order)
+    public IActionResult ClearOrderProducts(int id)
     {
-        return _orderService.ClearOrderProducts(order);
+        return _orderService.ClearOrderProducts(id);
     }
     
     [HttpGet("GetStatuses")]

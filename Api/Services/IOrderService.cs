@@ -18,7 +18,7 @@ public interface IOrderService
     public IActionResult AddProductsToOrder(List<OrderProducts> orderProducts);
     public IActionResult DeleteProductFromOrder(OrderProducts orderProducts);
     public IActionResult SetOrderProducts(List<OrderProducts> orderProductsList);
-    public IActionResult ClearOrderProducts(Order order);
+    public IActionResult ClearOrderProducts(int id);
     // order status
     public IActionResult GetStatuses();
     public IActionResult AddStatus(OrderStatus orderStatus);

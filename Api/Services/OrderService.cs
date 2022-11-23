@@ -65,9 +65,9 @@ public class OrderService : IOrderService
         return _productRepository.SetOrderProducts(orderProductsList);
     }
 
-    public IActionResult ClearOrderProducts(Order order)
+    public IActionResult ClearOrderProducts(int id)
     {
-        return _productRepository.ClearOrderProducts(order);
+        return _productRepository.ClearOrderProducts(id);
     }
 
     public IActionResult GetStatuses()

@@ -9,16 +9,9 @@ public class Order
         Client = new Client.Client();
         DateTimeOfCreation = new DateTime();
         OrderProductsList = new List<OrderProducts>();
+        OrderStatusesList = new List<OrderStatuses>();
     }
-
-    public Order(int id, Client.Client client, DateTime dateTimeOfCreation, decimal totalCost)
-    {
-        Id = id;
-        Client = client;
-        DateTimeOfCreation = dateTimeOfCreation;
-        TotalCost = totalCost;
-    }
-
+    
     public int Id { get; set; }
     [Required(ErrorMessage = "Client is required")]
     public Client.Client Client { get; set; }
@@ -27,4 +20,5 @@ public class Order
 
     public decimal TotalCost { get; set; } = 0;
     public List<OrderProducts> OrderProductsList { get; set; }
+    public List<OrderStatuses> OrderStatusesList { get; set; }
 }

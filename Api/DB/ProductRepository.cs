@@ -1170,7 +1170,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 {
                     OrderProducts orderProducts = new OrderProducts();
                     orderProducts.Id = reader.GetInt32(reader.GetOrdinal("id"));
-                    orderProducts.Order.Id = reader.GetInt32(reader.GetOrdinal("order_id"));
+                    orderProducts.OrderId = reader.GetInt32(reader.GetOrdinal("order_id"));
                     orderProducts.Product.Id = reader.GetInt32(reader.GetOrdinal("product_id"));
                     orderProducts.Count = reader.GetInt32(reader.GetOrdinal("count"));
                     orderProducts.PriceForOne = reader.GetDecimal(reader.GetOrdinal("price_for_one"));
@@ -1201,7 +1201,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() { Value = orderProducts.Order.Id},
+                new() { Value = orderProducts.OrderId},
                 new() { Value = orderProducts.Product.Id},
                 new() { Value = orderProducts.Count},
                 new() { Value = orderProducts.PriceForOne}
@@ -1250,7 +1250,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() { Value = orderProducts.Order.Id},
+                new() { Value = orderProducts.OrderId},
                 new() {Value = orderProducts.Product.Id},
             }
         };
@@ -1276,7 +1276,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         try
         {
             // очищаем список продуктов в заказе
-            ClearOrderProducts(orderProductsList.ElementAt(0).Order);
+            ClearOrderProducts(orderProductsList.ElementAt(0).OrderId);
             // добавляем продукты в заказ
             AddProductsToOrder(orderProductsList);
             return new OkResult();
@@ -1287,7 +1287,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult ClearOrderProducts(Order order)
+    public IActionResult ClearOrderProducts(int id)
     {
         connection.Open();
         // запрос
@@ -1297,7 +1297,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = order.Id},
+                new() {Value = id},
             }
         };
         // пробуем выолнить
@@ -1473,7 +1473,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 {
                     OrderStatuses orderStatus = new OrderStatuses();
                     orderStatus.Id = reader.GetInt32(reader.GetOrdinal("id"));
-                    orderStatus.Order.Id = reader.GetInt32(reader.GetOrdinal("order_id"));
+                    orderStatus.OrderId = reader.GetInt32(reader.GetOrdinal("order_id"));
                     orderStatus.OrderStatus.Id = reader.GetInt32(reader.GetOrdinal("order_status_id"));
                     orderStatuses.Add(orderStatus);
                 }
@@ -1487,9 +1487,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             OkObjectResult orderstat = GetStatuses() as OkObjectResult;
             var statuses = orderstat.Value as List<OrderStatus>;
             orderStatus.OrderStatus = statuses.Where(c => c.Id == orderStatus.OrderStatus.Id).FirstOrDefault();
-            
-            OkObjectResult order = GetOrder(orderStatus.Order.Id) as OkObjectResult;
-            orderStatus.Order = order.Value as Order;
         }
         
         return new OkObjectResult(orderStatuses);
@@ -1506,7 +1503,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() { Value = orderStatus.Order.Id},
+                new() { Value = orderStatus.OrderId},
                 new() { Value = orderStatus.OrderStatus.Id}
             }
         };
@@ -1536,7 +1533,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = orderStatus.Order.Id},
+                new() {Value = orderStatus.OrderId},
                 new() {Value = orderStatus.OrderStatus.Id},
             }
         };
