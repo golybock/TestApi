@@ -352,7 +352,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteProductCategory(Category category)
+    public IActionResult DeleteProductCategory(int productCategoryId)
     {
         connection.Open();
         // запрос
@@ -362,7 +362,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = category.Id},
+                new() {Value = productCategoryId},
             }
         };
         // пробуем выолнить
@@ -415,7 +415,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteBrand(Brand brand)
+    public IActionResult DeleteBrand(int brandId)
     {
         connection.Open();
         // запрос
@@ -425,7 +425,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = brand.Id},
+                new() {Value = brandId},
             }
         };
         // пробуем выолнить
@@ -607,18 +607,17 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteBrandFromProduct(ProductBrand productBrand)
+    public IActionResult DeleteBrandFromProduct(int productBrandId)
     {
         connection.Open();
         // запрос
-        string query = @"delete from product_brand where product_id = $1 and brand_id = $2";
+        string query = @"delete from product_brand where id = $1";
         // дополняем запрос параметрами
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
             Parameters =
             {
-                new() {Value = productBrand.Product.Id},
-                new() { Value = productBrand.Brand.Id}
+                new() {Value = productBrandId}
             }
         };
         // пробуем выолнить
@@ -642,7 +641,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         try
         {
-            ClearProductBrands(productBrands.ElementAt(0).Product);
+            ClearProductBrands(productBrands.ElementAt(0).Product.Id);
             AddBrandsToProduct(productBrands);
             return new AcceptedResult();
         }
@@ -652,7 +651,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
     
-    public IActionResult ClearProductBrands(Product product)
+    public IActionResult ClearProductBrands(int productId)
     {
         connection.Open();
         // запрос
@@ -662,7 +661,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = product.Id},
+                new() {Value = productId},
             }
         };
         // пробуем выолнить
@@ -710,7 +709,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                     ProductPhoto productPhoto = new ProductPhoto();
                     productPhoto.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     productPhoto.PhotoPath = reader.GetString(reader.GetOrdinal("photo_url"));
-                    productPhoto.Product.Id = reader.GetInt32(reader.GetOrdinal("product_id"));
+                    productPhoto.ProductId = reader.GetInt32(reader.GetOrdinal("product_id"));
                     productPhotos.Add(productPhoto);
                 }
             }
@@ -733,7 +732,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = productPhoto.Product.Id},
+                new() {Value = productPhoto.ProductId},
                 new() {Value = productPhoto.PhotoPath}
             }
         };
@@ -753,8 +752,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             connection.Close();
         }
     }
-    
-    public IActionResult DeleteProductPhoto(ProductPhoto productPhoto)
+
+    public IActionResult DeleteProductPhoto(int productPhotoId)
     {
         connection.Open();
         // запрос
@@ -764,7 +763,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = productPhoto.Id},
+                new() {Value = productPhotoId},
             }
         };
         // пробуем выолнить
@@ -838,7 +837,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         try
         {
-            ClearProductPhotos(productPhotos.ElementAt(0).Product);
+            ClearProductPhotos(productPhotos.ElementAt(0).ProductId);
             AddProductPhotos(productPhotos);
             return new AcceptedResult();
         }
@@ -848,7 +847,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
     
-    public IActionResult ClearProductPhotos(Product product)
+    public IActionResult ClearProductPhotos(int productId)
     {
         connection.Open();
         // запрос
@@ -858,7 +857,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = product.Id},
+                new() {Value = productId},
             }
         };
         // пробуем выолнить
@@ -924,17 +923,17 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteProductPrice(ProductPrice productPrice)
+    public IActionResult DeleteProductPrice(int productPriceId)
     {
         connection.Open();
         // запрос
-        string query = @"delete from product_price where id = $1 and product_id = $2";
+        string query = @"delete from product_price where id = $1";
         // дополняем запрос параметрами
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
             Parameters =
             {
-                new() { Value = productPrice.Id}
+                new() { Value = productPriceId}
             }
         };
         // пробуем выолнить
@@ -1382,38 +1381,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             connection.Close();
         }
     }
-
-    public IActionResult DeleteStatus(OrderStatus orderStatus)
-    {
-        connection.Open();
-        // запрос
-        string query = @"delete from order_status where id = $1";
-        // дополняем запрос параметрами
-        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
-        {
-            Parameters =
-            {
-                new() {Value = orderStatus.Id},
-            }
-        };
-        // пробуем выолнить
-        try
-        {
-            // выполняем команду
-            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new BadRequestResult();
-        }
-        // что-то не так с данными (ну вдруг)
-        catch (Exception e)
-        {
-            return new BadRequestResult();
-        }
-        finally
-        {
-            connection.Close();
-        }
-    }
-
-    public IActionResult EditOrderStatus(OrderStatus orderStatus)
+    
+    public IActionResult EditStatus(OrderStatus orderStatus)
     {
         connection.Open();
         // запрос
@@ -1439,6 +1408,36 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         catch (Exception e)
         {
             return new BadRequestObjectResult(e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
+    }
+
+    public IActionResult DeleteStatus(int orderStatusId)
+    {
+        connection.Open();
+        // запрос
+        string query = @"delete from order_status where id = $1";
+        // дополняем запрос параметрами
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters =
+            {
+                new() {Value = orderStatusId},
+            }
+        };
+        // пробуем выолнить
+        try
+        {
+            // выполняем команду
+            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new BadRequestResult();
+        }
+        // что-то не так с данными (ну вдруг)
+        catch (Exception e)
+        {
+            return new BadRequestResult();
         }
         finally
         {
@@ -1523,18 +1522,17 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteOrderStatus(OrderStatuses orderStatus)
+    public IActionResult DeleteOrderStatus(int orderStatusesId)
     {
         connection.Open();
         // запрос
-        string query = @"delete from order_statuses where order_id = $1 and order_status_id = $2";
+        string query = @"delete from order_statuses where id = $1";
         // дополняем запрос параметрами
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
             Parameters =
             {
-                new() {Value = orderStatus.OrderId},
-                new() {Value = orderStatus.OrderStatus.Id},
+                new() {Value = orderStatusesId}
             }
         };
         // пробуем выолнить

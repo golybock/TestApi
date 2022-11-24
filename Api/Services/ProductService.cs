@@ -61,9 +61,9 @@ public class ProductsService : IProductsService
         return _productRepository.EditProductCategory(category);
     }
 
-    public IActionResult DeleteProductCategory(Category category)
+    public IActionResult DeleteProductCategory(int productCategoryId)
     {
-        return _productRepository.DeleteProductCategory(category);
+        return _productRepository.DeleteProductCategory(productCategoryId);
     }
 
     public IActionResult AddBrand(Brand brand)
@@ -71,9 +71,9 @@ public class ProductsService : IProductsService
         return _productRepository.AddBrand(brand);
     }
 
-    public IActionResult DeleteBrand(Brand brand)
+    public IActionResult DeleteBrand(int brandId)
     {
-        return _productRepository.DeleteBrand(brand);
+        return _productRepository.DeleteBrand(brandId);
     }
 
     public IActionResult EditBrand(Brand brand)
@@ -101,21 +101,21 @@ public class ProductsService : IProductsService
         return _productRepository.AddBrandsToProduct(productBrands);
     }
 
-    public IActionResult DeleteBrandFromProduct(ProductBrand productBrand)
+    public IActionResult DeleteBrandFromProduct(int productBrandId)
     {
-        return _productRepository.DeleteBrandFromProduct(productBrand);
+        return _productRepository.DeleteBrandFromProduct(productBrandId);
     }
-
+    
     public IActionResult SetProductBrands(List<ProductBrand> productBrands)
     {
         return _productRepository.SetProductBrands(productBrands);
     }
 
-    public IActionResult ClearProductBrands(Product product)
+    public IActionResult ClearProductBrands(int productId)
     {
-        return _productRepository.ClearProductBrands(product);
+        return _productRepository.ClearProductBrands(productId);
     }
-
+    
     public IActionResult GetProductPhotos(int id)
     {
         return _productRepository.GetProductPhotos(id);
@@ -126,9 +126,9 @@ public class ProductsService : IProductsService
         return _productRepository.AddProductPhoto(productPhoto);
     }
 
-    public IActionResult DeleteProductPhoto(ProductPhoto productPhoto)
+    public IActionResult DeleteProductPhoto(int productPhotoId)
     {
-        return _productRepository.DeleteProductPhoto(productPhoto);
+        return _productRepository.DeleteProductPhoto(productPhotoId);
     }
 
     public IActionResult EditProductPhoto(ProductPhoto productPhoto)
@@ -145,19 +145,19 @@ public class ProductsService : IProductsService
     {
         return _productRepository.SetProductPhotos(productPhotos);
     }
-    
-    public IActionResult ClearProductPhotos(Product product)
+
+    public IActionResult ClearProductPhotos(int productId)
     {
-        return _productRepository.ClearProductPhotos(product);
+        return _productRepository.ClearOrderProducts(productId);
     }
 
     public IActionResult AddNewProductPrice(ProductPrice productPrice)
     {
         return _productRepository.AddNewProductPrice(productPrice);
     }
-    
-    public IActionResult DeleteProductPrice(ProductPrice productPrice)
+
+    public IActionResult DeleteProductPrice(int productPriceId)
     {
-        return _productRepository.DeleteProductPrice(productPrice);
+        return _productRepository.DeleteProductPrice(productPriceId);
     }
 }

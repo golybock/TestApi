@@ -22,10 +22,10 @@ public interface IOrderService
     // order status
     public IActionResult GetStatuses();
     public IActionResult AddStatus(OrderStatus orderStatus);
-    public IActionResult DeleteStatus(OrderStatus orderStatus);
-    public IActionResult EditOrderStatus(OrderStatus orderStatus);
+    public IActionResult DeleteStatus(int id);
+    public IActionResult EditStatus(OrderStatus orderStatus);
     // order statuses
     public IActionResult GetOrderStatuses(int id);
     public IActionResult AddOrderStatus(OrderStatuses orderStatuses);
-    public IActionResult DeleteOrderStatus(OrderStatuses orderStatuses);
+    public IActionResult DeleteOrderStatus(int id);
 }

@@ -80,14 +80,14 @@ public class OrderService : IOrderService
         return _productRepository.AddStatus(orderStatus);
     }
 
-    public IActionResult DeleteStatus(OrderStatus orderStatus)
+    public IActionResult DeleteStatus(int orderStatusId)
     {
-        return _productRepository.DeleteStatus(orderStatus);
+        return _productRepository.DeleteStatus(orderStatusId);
     }
 
-    public IActionResult EditOrderStatus(OrderStatus orderStatus)
+    public IActionResult EditStatus(OrderStatus orderStatus)
     {
-        return _productRepository.EditOrderStatus(orderStatus);
+        return _productRepository.EditStatus(orderStatus);
     }
 
     public IActionResult GetOrderStatuses(int id)
@@ -100,8 +100,8 @@ public class OrderService : IOrderService
         return _productRepository.AddOrderStatus(orderStatuses);
     }
 
-    public IActionResult DeleteOrderStatus(OrderStatuses orderStatuses)
+    public IActionResult DeleteOrderStatus(int orderStatusId)
     {
-        return _productRepository.DeleteOrderStatus(orderStatuses);
+        return _productRepository.DeleteOrderStatus(orderStatusId);
     }
 }

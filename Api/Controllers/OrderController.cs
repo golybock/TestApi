@@ -96,15 +96,15 @@ public class OrderController : Controller, IOrderService
     }
     
     [HttpPost("DeleteStatus")]
-    public IActionResult DeleteStatus(OrderStatus orderStatus)
+    public IActionResult DeleteStatus(int orderStatusId)
     {
-        return _orderService.DeleteStatus(orderStatus);
+        return _orderService.DeleteStatus(orderStatusId);
     }
     
-    [HttpPost("EditOrderStatus")]
-    public IActionResult EditOrderStatus(OrderStatus orderStatus)
+    [HttpPost("EditStatus")]
+    public IActionResult EditStatus(OrderStatus orderStatus)
     {
-        return _orderService.EditOrderStatus(orderStatus);
+        return _orderService.EditStatus(orderStatus);
     }
     
     [HttpGet("GetOrderStatuses")]
@@ -120,8 +120,8 @@ public class OrderController : Controller, IOrderService
     }
     
     [HttpPost("DeleteOrderStatus")]
-    public IActionResult DeleteOrderStatus(OrderStatuses orderStatuses)
+    public IActionResult DeleteOrderStatus(int orderStatusesId)
     {
-        return _orderService.DeleteOrderStatus(orderStatuses);
+        return _orderService.DeleteOrderStatus(orderStatusesId);
     }
 }

@@ -73,9 +73,9 @@ public class ProductsController : Controller, IProductsService
     }
     
     [HttpPost("DeleteProductCategory")]
-    public IActionResult DeleteProductCategory(Category category)
+    public IActionResult DeleteProductCategory(int productCategoryId)
     {
-        return _productsService.DeleteProductCategory(category);
+        return _productsService.DeleteProductCategory(productCategoryId);
     }
     
     [HttpPost("AddBrand")]
@@ -85,9 +85,9 @@ public class ProductsController : Controller, IProductsService
     }
     
     [HttpPost("DeleteBrand")]
-    public IActionResult DeleteBrand(Brand brand)
+    public IActionResult DeleteBrand(int brandId)
     {
-        return _productsService.DeleteBrand(brand);
+        return _productsService.DeleteBrand(brandId);
     }
     
     [HttpPost("EditBrand")]
@@ -121,9 +121,9 @@ public class ProductsController : Controller, IProductsService
     }
     
     [HttpPost("DeleteBrandFromProduct")]
-    public IActionResult DeleteBrandFromProduct(ProductBrand productBrand)
+    public IActionResult DeleteBrandFromProduct(int productBrandId)
     {
-        return _productsService.DeleteBrandFromProduct(productBrand);
+        return _productsService.DeleteBrandFromProduct(productBrandId);
     }
 
     [HttpPost("SetProductBrands")]
@@ -133,9 +133,9 @@ public class ProductsController : Controller, IProductsService
     }
     
     [HttpPost("ClearProductBrands")]
-    public IActionResult ClearProductBrands(Product product)
+    public IActionResult ClearProductBrands(int productId)
     {
-        return _productsService.ClearProductBrands(product);
+        return _productsService.ClearProductBrands(productId);
     }
     
     [HttpGet("GetProductPhotos")]
@@ -151,9 +151,9 @@ public class ProductsController : Controller, IProductsService
     }
 
     [HttpPost("DeleteProductPhoto")]
-    public IActionResult DeleteProductPhoto(ProductPhoto productPhoto)
+    public IActionResult DeleteProductPhoto(int productPhotoId)
     {
-        return _productsService.DeleteProductPhoto(productPhoto);
+        return _productsService.DeleteProductPhoto(productPhotoId);
     }
     
     [HttpPost("EditProductPhoto")]
@@ -175,9 +175,9 @@ public class ProductsController : Controller, IProductsService
     }
 
     [HttpPost("ClearProductPhotos")]
-    public IActionResult ClearProductPhotos(Product product)
+    public IActionResult ClearProductPhotos(int productId)
     {
-        return _productsService.ClearProductPhotos(product);
+        return _productsService.ClearProductPhotos(productId);
     }
     
     [HttpPost("AddNewProductPrice")]
@@ -188,8 +188,8 @@ public class ProductsController : Controller, IProductsService
     
     
     [HttpPost("DeleteProductPrice")]
-    public IActionResult DeleteProductPrice(ProductPrice productPrice)
+    public IActionResult DeleteProductPrice(int productPriceId)
     {
-        return _productsService.DeleteProductPrice(productPrice);
+        return _productsService.DeleteProductPrice(productPriceId);
     }
 }

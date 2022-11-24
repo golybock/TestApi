@@ -5,7 +5,7 @@ namespace Api.Models.Product;
 
 public class Product
 {
-    public Product(int id, string? name, decimal? currentPrice, Category category, decimal? sale, List<ProductPrice> productPrices, List<Category> productCategories, List<ProductPhoto> productPhotos, List<Brand> productBrands)
+    public Product(int id, string? name, decimal? currentPrice, Category category, decimal? sale, List<ProductPrice> productPrices, List<ProductPhoto> productPhotos, List<Brand> productBrands)
     {
         Id = id;
         Name = name;
@@ -13,7 +13,6 @@ public class Product
         Category = category;
         Sale = sale;
         ProductPrices = productPrices;
-        ProductCategories = productCategories;
         ProductPhotos = productPhotos;
         ProductBrands = productBrands;
     }
@@ -22,7 +21,6 @@ public class Product
     {
         Category = new Category();
         ProductPrices = new List<ProductPrice>();
-        ProductCategories = new List<Category>();
         ProductPhotos = new List<ProductPhoto>();
         ProductBrands = new List<Brand>();
     }
@@ -37,7 +35,6 @@ public class Product
     public Category Category { get; set; }
     public decimal? Sale { get; set; } = 0;
     public List<ProductPrice> ProductPrices { get; set; }
-    public List<Category> ProductCategories { get; set; }
     public List<ProductPhoto> ProductPhotos { get; set; }
     public List<Brand> ProductBrands { get; set; }
 }
