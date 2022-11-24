@@ -59,6 +59,12 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             var ok = GetCategory(pr.Category.Id) as OkObjectResult;
             pr.Category = ok.Value as Category;
+            
+            var photos = GetProductPhotos(pr.Id) as OkObjectResult;
+            pr.ProductPhotos = photos.Value as List<ProductPhoto>;
+
+            var brands = GetProductBrands(pr.Id) as OkObjectResult;
+            pr.ProductBrands = brands.Value as List<Brand>;
         }
         
         return new OkObjectResult(products);
@@ -103,6 +109,12 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         var ok = GetCategory(product.Category.Id) as OkObjectResult;
         product.Category = ok.Value as Category;
         
+        var photos = GetProductPhotos(product.Id) as OkObjectResult;
+        product.ProductPhotos = photos.Value as List<ProductPhoto>;
+
+        var brands = GetProductBrands(product.Id) as OkObjectResult;
+        product.ProductBrands = brands.Value as List<Brand>;
+
         return new OkObjectResult(product);
     }
     
@@ -690,7 +702,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         List<ProductPhoto> productPhotos = new List<ProductPhoto>();
 
         // запрос
-        string query = @"select * from product_photo where id = $1";
+        string query = @"select * from product_photo where product_id = $1";
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
