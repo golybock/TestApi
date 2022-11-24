@@ -4,13 +4,6 @@ namespace Api.Models.Product;
 
 public class Brand
 {
-    public Brand(int id, string name, string photoUrl)
-    {
-        Id = id;
-        Name = name;
-        PhotoUrl = photoUrl;
-    }
-
     public Brand()
     {
         

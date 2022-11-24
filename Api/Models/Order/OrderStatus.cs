@@ -4,13 +4,6 @@ namespace Api.Models.Order;
 
 public class OrderStatus
 {
-    public OrderStatus(int id, string name, string description)
-    {
-        Id = id;
-        Name = name;
-        Description = description;
-    }
-
     public OrderStatus()
     {
         

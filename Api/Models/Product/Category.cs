@@ -4,13 +4,6 @@ namespace Api.Models.Product;
 
 public class Category
 {
-    public Category(int id, string name, string description)
-    {
-        Id = id;
-        Name = name;
-        Description = description;
-    }
-
     public Category()
     {
         

@@ -21,4 +21,14 @@ public class Order
     public decimal TotalCost { get; set; } = 0;
     public List<OrderProducts> OrderProductsList { get; set; }
     public List<OrderStatuses> OrderStatusesList { get; set; }
+
+    public void Addproduct(OrderProducts orderProducts)
+    {
+        OrderProductsList.Add(orderProducts);
+    }
+
+    public void AddOrderStatuses(OrderStatuses orderStatuses)
+    {
+        OrderStatusesList.Add(orderStatuses);
+    }
 }
