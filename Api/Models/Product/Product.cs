@@ -5,18 +5,6 @@ namespace Api.Models.Product;
 
 public class Product
 {
-    public Product(int id, string? name, decimal? currentPrice, Category category, decimal? sale, List<ProductPrice> productPrices, List<ProductPhoto> productPhotos, List<Brand> productBrands)
-    {
-        Id = id;
-        Name = name;
-        CurrentPrice = currentPrice;
-        Category = category;
-        Sale = sale;
-        ProductPrices = productPrices;
-        ProductPhotos = productPhotos;
-        ProductBrands = productBrands;
-    }
-
     public Product()
     {
         Category = new Category();
