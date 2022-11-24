@@ -8,19 +8,7 @@ public class Client
     {
         DateTimeOfRegistration = new DateTime();
     }
-
-    public Client(int id, string email, string phoneNumber, string firstName, string lastName, string token, string password, DateTime dateTimeOfRegistration)
-    {
-        Id = id;
-        Email = email;
-        PhoneNumber = phoneNumber;
-        FirstName = firstName;
-        LastName = lastName;
-        Token = token;
-        Password = password;
-        DateTimeOfRegistration = dateTimeOfRegistration;
-    }
-
+    
     public int Id { get; set; }
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }

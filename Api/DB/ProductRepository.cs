@@ -582,8 +582,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() {Value = productBrand.Product.Id},
-                new() {Value = productBrand.Brand.Id}
+                new() {Value = productBrand.ProductId},
+                new() {Value = productBrand.BrandId}
             }
         };
         // пробуем выолнить
@@ -653,7 +653,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         try
         {
-            ClearProductBrands(productBrands.ElementAt(0).Product.Id);
+            ClearProductBrands(productBrands.ElementAt(0).ProductId);
             AddBrandsToProduct(productBrands);
             return new AcceptedResult();
         }
@@ -893,10 +893,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         try
         {
-            // обновляем цену продукта
-            productPrice.Product.CurrentPrice = productPrice.Price;
-            UpdateProduct(productPrice.Product);
-            
             connection.Open();
             // запрос
             string query = @"insert into product_price(price, datetime, product_id, customer_id)
@@ -909,8 +905,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 {
                     new() { Value = productPrice.Price},
                     new() { Value = DateTime.Now},
-                    new() { Value = productPrice.Product.Id},
-                    new() { Value = productPrice.Customer.Id}
+                    new() { Value = productPrice.ProductId},
+                    new() { Value = productPrice.CustomerId}
                 }
             };
             // пробуем выолнить
@@ -994,20 +990,15 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                     order.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     order.DateTimeOfCreation = reader.GetDateTime(reader.GetOrdinal("datetime_of_creation"));
                     order.TotalCost = reader.GetDecimal(reader.GetOrdinal("total_cost"));
-                    order.Client.Id = reader.GetInt32(reader.GetOrdinal("client_id"));
+                    order.ClientId = reader.GetInt32(reader.GetOrdinal("client_id"));
                 }
             }
         }
         
         connection.Close();
         
-        
-
-        OkObjectResult ok = GetClient(order.Client.Id) as OkObjectResult;
-        order.Client = ok.Value as Client;
-        
         OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
-        order.OrderProductsList = products.Value as List<OrderProducts>;
+        order.OrderProductsList = products.Value as List<OrderProduct>;
 
         return new OkObjectResult(order);
     }
@@ -1037,7 +1028,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                     order.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     order.DateTimeOfCreation = reader.GetDateTime(reader.GetOrdinal("datetime_of_creation"));
                     order.TotalCost = reader.GetDecimal(reader.GetOrdinal("total_cost"));
-                    order.Client.Id = reader.GetInt32(reader.GetOrdinal("client_id"));
+                    order.ClientId = reader.GetInt32(reader.GetOrdinal("client_id"));
                     // сохранение объекта в списке
                     orders.Add(order);
                 }
@@ -1048,12 +1039,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         foreach (var order in orders)
         {
-            OkObjectResult ok = GetClient(order.Client.Id) as OkObjectResult;
-            order.Client = ok.Value as Client;
-            
             OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
-            order.OrderProductsList = products.Value as List<OrderProducts>;
-
+            order.OrderProductsList = products.Value as List<OrderProduct>;
         }
         
         return new OkObjectResult(orders);
@@ -1070,7 +1057,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             Parameters =
             {
-                new() { Value = order.Client.Id},
+                new() { Value = order.ClientId},
                 new() { Value = DateTime.Now},
                 new() { Value = order.TotalCost}
             }
@@ -1135,7 +1122,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             Parameters =
             {
                 new() { Value = order.Id},
-                new() {Value = order.Client.Id},
+                new() {Value = order.ClientId},
                 new() {Value = order.TotalCost}
             }
         };
@@ -1160,7 +1147,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         // открываем подкючение к бд
         connection.Open();
 
-        List<OrderProducts> orderProductsList = new List<OrderProducts>();
+        List<OrderProduct> orderProductsList = new List<OrderProduct>();
 
         // запрос
         string query = @"select * from order_products where order_id = $1";
@@ -1179,10 +1166,10 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 // проход по всем строкам таблицы
                 while (reader.Read())
                 {
-                    OrderProducts orderProducts = new OrderProducts();
+                    OrderProduct orderProducts = new OrderProduct();
                     orderProducts.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     orderProducts.OrderId = reader.GetInt32(reader.GetOrdinal("order_id"));
-                    orderProducts.Product.Id = reader.GetInt32(reader.GetOrdinal("product_id"));
+                    orderProducts.ProductId = reader.GetInt32(reader.GetOrdinal("product_id"));
                     orderProducts.Count = reader.GetInt32(reader.GetOrdinal("count"));
                     orderProducts.PriceForOne = reader.GetDecimal(reader.GetOrdinal("price_for_one"));
                     orderProductsList.Add(orderProducts);
@@ -1192,16 +1179,10 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         
         connection.Close();
 
-        foreach (var orpr in orderProductsList)
-        {
-            OkObjectResult ok = GetProductById(orpr.Product.Id) as OkObjectResult;
-            orpr.Product = ok.Value as Product;
-        }
-
         return new OkObjectResult(orderProductsList);
     }
 
-    public IActionResult AddProductToOrder(OrderProducts orderProducts)
+    public IActionResult AddProductToOrder(OrderProduct orderProducts)
     {
         connection.Open();
         // запрос
@@ -1213,7 +1194,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             Parameters =
             {
                 new() { Value = orderProducts.OrderId},
-                new() { Value = orderProducts.Product.Id},
+                new() { Value = orderProducts.ProductId},
                 new() { Value = orderProducts.Count},
                 new() { Value = orderProducts.PriceForOne}
             }
@@ -1234,7 +1215,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult AddProductsToOrder(List<OrderProducts> orderProductsList)
+    public IActionResult AddProductsToOrder(List<OrderProduct> orderProductsList)
     {
         try
         {
@@ -1251,7 +1232,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult DeleteProductFromOrder(OrderProducts orderProducts)
+    public IActionResult DeleteProductFromOrder(OrderProduct orderProducts)
     {
         connection.Open();
         // запрос
@@ -1262,7 +1243,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             Parameters =
             {
                 new() { Value = orderProducts.OrderId},
-                new() {Value = orderProducts.Product.Id},
+                new() {Value = orderProducts.ProductId},
             }
         };
         // пробуем выолнить
@@ -1282,7 +1263,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult SetOrderProducts(List<OrderProducts> orderProductsList)
+    public IActionResult SetOrderProducts(List<OrderProduct> orderProductsList)
     {
         try
         {
@@ -1878,11 +1859,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         foreach (var order in orders)
         {
-            OkObjectResult ok = GetClient(id) as OkObjectResult;
-            order.Client = ok.Value as Client;
-            
             OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
-            order.OrderProductsList = ok.Value as List<OrderProducts>;
+            order.OrderProductsList = products.Value as List<OrderProduct>;
         }
         
         return new OkObjectResult(orders);

@@ -30,8 +30,6 @@ app.UseHttpsRedirection();
 
 app.UseCors("Police1");
 
-app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

@@ -54,25 +54,25 @@ public class OrderController : Controller, IOrderService
     }
     
     [HttpGet("AddProductToOrder")]
-    public IActionResult AddProductToOrder(OrderProducts orderProducts)
+    public IActionResult AddProductToOrder(OrderProduct orderProducts)
     {
         return _orderService.AddProductToOrder(orderProducts);
     }
     
     [HttpPost("AddProductsToOrder")]
-    public IActionResult AddProductsToOrder(List<OrderProducts> orderProducts)
+    public IActionResult AddProductsToOrder(List<OrderProduct> orderProducts)
     {
         return _orderService.AddProductsToOrder(orderProducts);
     }
     
     [HttpPost("DeleteProductFromOrder")]
-    public IActionResult DeleteProductFromOrder(OrderProducts orderProducts)
+    public IActionResult DeleteProductFromOrder(OrderProduct orderProducts)
     {
         return _orderService.DeleteProductFromOrder(orderProducts);
     }
     
     [HttpPost("SetOrderProducts")]
-    public IActionResult SetOrderProducts(List<OrderProducts> orderProductsList)
+    public IActionResult SetOrderProducts(List<OrderProduct> orderProductsList)
     {
         return _orderService.SetOrderProducts(orderProductsList);
     }

@@ -45,22 +45,22 @@ public class OrderService : IOrderService
         return _productRepository.GetOrderProducts(id);
     }
 
-    public IActionResult AddProductToOrder(OrderProducts orderProducts)
+    public IActionResult AddProductToOrder(OrderProduct orderProducts)
     {
         return _productRepository.AddProductToOrder(orderProducts);
     }
 
-    public IActionResult AddProductsToOrder(List<OrderProducts> orderProducts)
+    public IActionResult AddProductsToOrder(List<OrderProduct> orderProducts)
     {
         return _productRepository.AddProductsToOrder(orderProducts);
     }
 
-    public IActionResult DeleteProductFromOrder(OrderProducts orderProducts)
+    public IActionResult DeleteProductFromOrder(OrderProduct orderProducts)
     {
         return _productRepository.DeleteProductFromOrder(orderProducts);
     }
 
-    public IActionResult SetOrderProducts(List<OrderProducts> orderProductsList)
+    public IActionResult SetOrderProducts(List<OrderProduct> orderProductsList)
     {
         return _productRepository.SetOrderProducts(orderProductsList);
     }

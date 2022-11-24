@@ -14,10 +14,10 @@ public interface IOrderService
     public IActionResult EditOrder(Order order);
     // order products
     public IActionResult GetOrderProducts(int id);
-    public IActionResult AddProductToOrder(OrderProducts orderProducts);
-    public IActionResult AddProductsToOrder(List<OrderProducts> orderProducts);
-    public IActionResult DeleteProductFromOrder(OrderProducts orderProducts);
-    public IActionResult SetOrderProducts(List<OrderProducts> orderProductsList);
+    public IActionResult AddProductToOrder(OrderProduct orderProducts);
+    public IActionResult AddProductsToOrder(List<OrderProduct> orderProducts);
+    public IActionResult DeleteProductFromOrder(OrderProduct orderProducts);
+    public IActionResult SetOrderProducts(List<OrderProduct> orderProductsList);
     public IActionResult ClearOrderProducts(int id);
     // order status
     public IActionResult GetStatuses();

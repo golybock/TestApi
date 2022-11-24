@@ -25,20 +25,4 @@ public class Product
     public List<ProductPrice> ProductPrices { get; set; }
     public List<ProductPhoto> ProductPhotos { get; set; }
     public List<Brand> ProductBrands { get; set; }
-
-    public void AddBrand(Brand brand)
-    {
-        ProductBrands.Add(brand);
-    }
-
-    public void AddPhoto(ProductPhoto productPhoto)
-    { 
-        ProductPhotos.Add(productPhoto);   
-    }
-
-    public void AddPrice(ProductPrice price)
-    {
-        CurrentPrice = price.Price;
-        ProductPrices.Add(price);
-    }
 }

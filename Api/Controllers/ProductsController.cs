@@ -1,6 +1,7 @@
 ﻿using Api.Models;
 using Api.Models.Product;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,7 @@ public class ProductsController : Controller, IProductsService
     {
         _productsService = new ProductsService(configuration);
     }
-
+    
     [HttpGet("GetProducts")]
     public IActionResult GetProducts()
     {
