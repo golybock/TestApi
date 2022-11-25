@@ -999,6 +999,9 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         
         OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
         order.OrderProductsList = products.Value as List<OrderProduct>;
+        
+        OkObjectResult statuses = GetOrderStatuses(order.Id) as OkObjectResult;
+        order.OrderStatusesList = statuses.Value as List<OrderStatuses>;
 
         return new OkObjectResult(order);
     }
@@ -1041,6 +1044,9 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         {
             OkObjectResult products = GetOrderProducts(order.Id) as OkObjectResult;
             order.OrderProductsList = products.Value as List<OrderProduct>;
+            
+            OkObjectResult statuses = GetOrderStatuses(order.Id) as OkObjectResult;
+            order.OrderStatusesList = statuses.Value as List<OrderStatuses>;
         }
         
         return new OkObjectResult(orders);
@@ -1050,7 +1056,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         connection.Open();
         // запрос
-        string query = @"insert into client_order(client_id, datetime_of_creation, total_cost) VALUES ($1, $2, $3)";
+        string query = @"insert into client_order(client_id, datetime_of_creation, total_cost) VALUES ($1, $2, $3) returning id";
         
         // дополняем запрос параметрами
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
@@ -1062,10 +1068,17 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 new() { Value = order.TotalCost}
             }
         };
+        int orderId = 0;
         // пробуем выолнить
         try
         {
-            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new NotFoundResult();
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                orderId = reader.GetInt32(reader.GetOrdinal("id"));
+            }
+
+            return new OkObjectResult((orderId));
         }
         // что-то не так с данными
         catch (Exception e)
@@ -1075,6 +1088,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         finally
         {
             connection.Close();
+            AddOrderStatus(new OrderStatuses() { OrderId = orderId , StatusId = 1});
         }
     }
     
@@ -1466,7 +1480,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                     OrderStatuses orderStatus = new OrderStatuses();
                     orderStatus.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     orderStatus.OrderId = reader.GetInt32(reader.GetOrdinal("order_id"));
-                    orderStatus.OrderStatus.Id = reader.GetInt32(reader.GetOrdinal("order_status_id"));
+                    orderStatus.StatusId = reader.GetInt32(reader.GetOrdinal("order_status_id"));
                     orderStatuses.Add(orderStatus);
                 }
             }
@@ -1474,13 +1488,6 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         
         connection.Close();
 
-        foreach (var orderStatus in orderStatuses)
-        {
-            OkObjectResult orderstat = GetStatuses() as OkObjectResult;
-            var statuses = orderstat.Value as List<OrderStatus>;
-            orderStatus.OrderStatus = statuses.Where(c => c.Id == orderStatus.OrderStatus.Id).FirstOrDefault();
-        }
-        
         return new OkObjectResult(orderStatuses);
     }
 
@@ -1496,7 +1503,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             Parameters =
             {
                 new() { Value = orderStatus.OrderId},
-                new() { Value = orderStatus.OrderStatus.Id}
+                new() { Value = orderStatus.StatusId}
             }
         };
         // пробуем выолнить

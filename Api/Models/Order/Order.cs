@@ -15,7 +15,7 @@ public class Order
     [Required(ErrorMessage = "Client is required")]
     public int ClientId { get; set; }
     [Required(ErrorMessage = "DatetimeOfCreation is required")]
-    public DateTime DateTimeOfCreation { get; set; }
+    public DateTime? DateTimeOfCreation { get; set; }
     public decimal TotalCost { get; set; } = 0;
     public List<OrderProduct> OrderProductsList { get; set; }
     public List<OrderStatuses> OrderStatusesList { get; set; }
