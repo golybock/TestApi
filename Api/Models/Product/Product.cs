@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Models.Product;
@@ -22,7 +23,7 @@ public class Product
     [Required(ErrorMessage = "Category id required")]
     public Category Category { get; set; }
     public decimal? Sale { get; set; } = 0;
-    public List<ProductPrice> ProductPrices { get; set; }
-    public List<ProductPhoto> ProductPhotos { get; set; }
-    public List<Brand> ProductBrands { get; set; }
+    public List<ProductPrice>? ProductPrices { get; set; }
+    public List<ProductPhoto>? ProductPhotos { get; set; }
+    public List<Brand>? ProductBrands { get; set; }
 }

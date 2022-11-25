@@ -34,6 +34,12 @@ namespace Api.Controllers
             return _clientService.GetClient(token);
         }
         
+        [HttpGet("GetClientByLogin")]
+        public IActionResult GetClientByLogin(string login)
+        {
+            return _clientService.GetClientByLogin(login);
+        }
+
         [HttpGet("GetClientOrders")]
         public IActionResult GetClientOrders(int id)
         {

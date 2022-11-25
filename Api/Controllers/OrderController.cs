@@ -1,13 +1,14 @@
 using Api.Models.Order;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[EnableCors("Police1")]
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class OrderController : Controller, IOrderService
 {
     private OrderService _orderService;

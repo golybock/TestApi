@@ -10,6 +10,7 @@ namespace Api.Controllers;
 [EnableCors("Police1")]
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProductsController : Controller, IProductsService
 {
     private ProductsService _productsService;

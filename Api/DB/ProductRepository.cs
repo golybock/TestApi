@@ -4,6 +4,7 @@ using Api.Models.Customer;
 using Api.Models.Order;
 using Api.Models.Product;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -1005,7 +1006,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
 
         return new OkObjectResult(order);
     }
-
+    
+    [Authorize]
     public IActionResult GetOrders()
     {
         // открываем подкючение к бд
@@ -1792,6 +1794,54 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
             Parameters = {new() {Value = token}}
+        };
+        
+        // выполняем команду
+        using (cmd)
+        {
+            // создаем reader
+            using (NpgsqlDataReader reader = cmd.ExecuteReader())
+            {
+                // проход по всем строкам таблицы
+                while (reader.Read())
+                {
+                    client.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    client.DateTimeOfRegistration = reader.GetDateTime(reader.GetOrdinal("datetime_of_registration"));
+                    client.Token = reader.GetString(reader.GetOrdinal("token"));
+                    
+                    var email = reader.GetValue(reader.GetOrdinal("email"));
+                    var phoneNumber = reader.GetValue(reader.GetOrdinal("phone_number"));
+                    var password = reader.GetValue(reader.GetOrdinal("password"));
+                    var firstName = reader.GetValue(reader.GetOrdinal("first_name"));
+                    var lastName = reader.GetValue(reader.GetOrdinal("last_name"));
+
+                    client.Email = email == DBNull.Value ? null : email.ToString();
+                    client.PhoneNumber = phoneNumber == DBNull.Value ? null : phoneNumber.ToString();
+                    client.Password = password == DBNull.Value ? null : password.ToString();
+                    client.FirstName = firstName == DBNull.Value ? null : firstName.ToString();
+                    client.LastName = lastName == DBNull.Value ? null : lastName.ToString();
+                }
+            }
+        }
+        
+        connection.Close();
+
+        return new OkObjectResult(client);
+    }
+
+    public IActionResult GetClientByLogin(string login)
+    {
+        // открываем подкючение к бд
+        connection.Open();
+
+        Client client = new Client();
+        
+        // запрос
+        string query = @"select * from client where email = $1 or phone_number = $1";
+
+        NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
+        {
+            Parameters = {new() {Value = login}}
         };
         
         // выполняем команду

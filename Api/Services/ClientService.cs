@@ -25,6 +25,11 @@ public class ClientService : IClientService
         return _productRepository.GetClient(token);
     }
 
+    public IActionResult GetClientByLogin(string login)
+    {
+        return _productRepository.GetClientByLogin(login);
+    }
+
     public IActionResult GetClientOrders(int id)
     {
         return _productRepository.GetClientOrders(id);
