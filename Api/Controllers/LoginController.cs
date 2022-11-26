@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Api.Models.Client;
 using Api.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,31 +13,39 @@ namespace Api.Controllers
     public class LoginController : ControllerBase
     {
         private AuthService _authService;
+        private IConfiguration _configuration;
 
         public LoginController(IConfiguration configuration)
         {
+            _configuration = configuration;
             _authService = new AuthService(configuration);
         }
         
         [HttpPost, Route("login")]
-        public IActionResult Login(Client loginDTO)
+        public IActionResult Login(string login, string password, string key)
         {
             try
             {
-                if (string.IsNullOrEmpty(loginDTO.Email) ||
-                    string.IsNullOrEmpty(loginDTO.Password))
-                    return BadRequest("Username and/or Password not specified");
+                if (string.IsNullOrEmpty(login) ||
+                    string.IsNullOrEmpty(password) ||
+                    string.IsNullOrEmpty(key))
+                    return BadRequest("Username and/or Password, key not specified");
+
+                if (key != _configuration["AppSettings:Secret"])
+                {
+                    return BadRequest("Key is not valid");
+                }
                 
-                if (_authService.ClientAuthDataValid(loginDTO))
+                if (_authService.ClientAuthDataValid(login, password))
                 {
                     var secretKey = new SymmetricSecurityKey
-                        (Encoding.UTF8.GetBytes("abosetdryftugyihujiko';ilukgyfjhdgsfdfghjba"));
+                        (Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                     var signinCredentials = new SigningCredentials
                         (secretKey, SecurityAlgorithms.HmacSha256);
                     var jwtSecurityToken = new JwtSecurityToken(
-                        issuer: "aboba",
-                        audience: "aboba",
-                        claims: new List<Claim>() {new Claim(ClaimTypes.Name, loginDTO.Email)},
+                        issuer: _configuration["Jwt:Issuer"],
+                        audience: _configuration["Jwt:Audience"],
+                        claims: new List<Claim> {new (ClaimTypes.Email, login)},
                         expires: DateTime.UtcNow.AddHours(100),
                         signingCredentials: signinCredentials
                     );

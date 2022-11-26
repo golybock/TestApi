@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[EnableCors("Police1")]
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]

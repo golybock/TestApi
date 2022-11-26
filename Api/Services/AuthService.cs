@@ -15,24 +15,16 @@ public class AuthService
         _productRepository = new ProductRepository(_configuration.GetConnectionString("ProductsAppCon"));
     }
 
-    public bool ClientAuthDataValid(Client client)
+    public bool ClientAuthDataValid(string login, string password)
     {
-        OkObjectResult okemail = _productRepository.GetClientByLogin(client.Email) as OkObjectResult;
-        OkObjectResult okphone = _productRepository.GetClientByLogin(client.PhoneNumber) as OkObjectResult;
-
-        var cl = okemail.Value as Client;
-        var cl1 = okphone.Value as Client;
+        OkObjectResult ok = _productRepository.GetClientByLogin(login) as OkObjectResult;
+        
+        var cl = ok.Value as Client;
+        
         if (cl.Id != 0)
         {
-            return cl.Password == client.Password;
+            return cl.Password == password;
         }
-        else if (cl1.Id != 0)
-        {
-            return cl1.Password == client.Password;
-        }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 }
