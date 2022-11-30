@@ -10,12 +10,12 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private AuthService _authService;
         private IConfiguration _configuration;
 
-        public LoginController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration)
         {
             _configuration = configuration;
             _authService = new AuthService(configuration);
@@ -26,15 +26,11 @@ namespace Api.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(login) ||
-                    string.IsNullOrEmpty(password) ||
-                    string.IsNullOrEmpty(key))
+                if (AuthDataIsNull(login, password, key))
                     return BadRequest("Username and/or Password, key not specified");
 
-                if (key != _configuration["AppSettings:Secret"])
-                {
+                if (KeyIsValid(key))
                     return BadRequest("Key is not valid");
-                }
                 
                 if (_authService.ClientAuthDataValid(login, password))
                 {
@@ -55,9 +51,23 @@ namespace Api.Controllers
             catch(Exception ex)
             {
                 return BadRequest
-                    ("An error occurred in generating the token" + ex.ToString());
+                    ("An error occurred in generating the token" + ex);
             }
             return Unauthorized();
         }
+
+        public bool AuthDataIsNull(string login, string pass, string key)
+        {
+            return string.IsNullOrEmpty(login) ||
+                   string.IsNullOrEmpty(pass) ||
+                   string.IsNullOrEmpty(key);
+        }
+
+        public bool KeyIsValid(string key)
+        {
+            // сравниваем секретный ключ с полученым
+            return _configuration["AppSettings:Secret"] == key;
+        }
+        
     }
 }
