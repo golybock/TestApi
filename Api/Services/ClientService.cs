@@ -6,13 +6,11 @@ namespace Api.Services;
 
 public class ClientService : IClientService
 {
-    private ProductRepository _productRepository;
-    private readonly IConfiguration _configuration;
-    
+    private readonly ProductRepository _productRepository;
+
     public ClientService(IConfiguration configuration)
     {
-        _configuration = configuration;
-        _productRepository = new ProductRepository(_configuration.GetConnectionString("ProductsAppCon"));
+        _productRepository = new ProductRepository(configuration.GetConnectionString("ProductsAppCon"));
     }
     
     public IActionResult GetClient(int id)

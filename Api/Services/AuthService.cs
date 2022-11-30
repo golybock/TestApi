@@ -10,7 +10,7 @@ namespace Api.Services;
 
 public class AuthService
 {
-    private ProductRepository _productRepository;
+    private readonly ProductRepository _productRepository;
     private readonly IConfiguration _configuration;
     
     public AuthService(IConfiguration configuration)
@@ -26,11 +26,15 @@ public class AuthService
             if (AuthDataIsNull(login, password, key))
                 return new BadRequestObjectResult("Username and/or Password, key not specified");
 
-            if (KeyIsValid(key))
+            if (!KeyIsValid(key))
                 return new BadRequestObjectResult("Key is not valid");
 
             string token = GenerateToken(
-                new List<Claim> {new(ClaimTypes.Email, login)});
+                new List<Claim> {
+                    new(ClaimTypes.Email, login),
+                    new (ClaimTypes.UserData, DateTime.UtcNow.ToString())
+                    
+                });
             
             if (ClientAuthDataValid(login, password))
             {
@@ -47,13 +51,10 @@ public class AuthService
     private bool ClientAuthDataValid(string login, string password)
     {
         OkObjectResult? ok = _productRepository.GetClientByLogin(login) as OkObjectResult;
-        
-        var cl = ok?.Value as Client;
-        
-        if (cl != null && cl.Id != 0)
-        {
+
+        if (ok?.Value is Client cl && cl.Id != 0)
             return cl.Password == password;
-        }
+        
         return false;
     }
 

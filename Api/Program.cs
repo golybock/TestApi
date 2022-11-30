@@ -5,18 +5,6 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "Police1",
-        policy  =>
-        {
-            policy
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin();
-        });
-});
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -74,8 +62,6 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 var app = builder.Build();
-
-app.UseCors("Police1");
 
 app.MapControllers();
 
