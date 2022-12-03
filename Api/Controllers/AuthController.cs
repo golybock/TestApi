@@ -1,8 +1,10 @@
 using Api.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    [EnableCors("Police")]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase

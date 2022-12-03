@@ -5,6 +5,7 @@ using Api.DB;
 using Api.Models.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Api.Services;
 
@@ -38,7 +39,7 @@ public class AuthService
             
             if (ClientAuthDataValid(login, password))
             {
-                return new OkObjectResult(token);
+                return new OkObjectResult(JsonSerializer.Serialize(token));
             }
         }
         catch(Exception ex)
