@@ -2,99 +2,79 @@
 using Api.Models.Customer;
 using Api.Models.Order;
 using Api.Models.Product;
-using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
 namespace Api.Database;
 
-public class ProductRepository : IProductsService, IOrderService, ICustomerService, IClientService
+public class ProductRepository : MainDatabaseClass
 {
-    private readonly string _connectionString;
-    private NpgsqlConnection connection;
-
-    public ProductRepository(string connectionString)
+    protected ProductRepository(string connectionString) : base(connectionString)
     {
-        _connectionString = connectionString;
-        connection = new NpgsqlConnection(_connectionString);
     }
-
-    public IActionResult GetProducts()
+    
+    public List<Product> GetProducts()
     {
-        // открываем подкючение к бд
         connection.Open();
         
-        // для хранения продуктов из бд в виде объектов
         List<Product> products = new List<Product>();
         
-        // запрос
         string query = @"select * from product";
         
-        // выполняем команду
         using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
         {
-            // создаем reader
             using (NpgsqlDataReader reader = cmd.ExecuteReader())
             {
-                // проход по всем строкам таблицы
                 while (reader.Read())
                 {
                     Product product = new Product();
-                    // перенос значений из строки базы данных в объект класса
+
                     product.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     product.Name = reader.GetString(reader.GetOrdinal("name"));
                     product.CurrentPrice = reader.GetDecimal(reader.GetOrdinal("current_price"));
                     product.Sale = reader.GetDecimal(reader.GetOrdinal("sale"));
                     product.Category.Id = reader.GetInt32(reader.GetOrdinal("category_id"));
-                    // сохранение объекта в списке
+
                     products.Add(product);
                 }
             }
         }
         
         connection.Close();
-
+        
+        // дополняем данными
         foreach (var pr in products)
         {
-            var ok = GetCategory(pr.Category.Id) as OkObjectResult;
-            pr.Category = ok.Value as Category;
+            pr.Category = GetCategory(pr.Category.Id);
             
-            var photos = GetProductPhotos(pr.Id) as OkObjectResult;
             pr.ProductPhotos = photos.Value as List<ProductPhoto>;
-
-            var brands = GetProductBrands(pr.Id) as OkObjectResult;
+            
             pr.ProductBrands = brands.Value as List<Brand>;
         }
         
-        return new OkObjectResult(products);
+        return products;
     }
 
-    public IActionResult GetProductById(int id)
+    public Product GetProductById(int id)
     {
-        // открываем подкючение к бд
         connection.Open();
         
-        // для хранения продуктов из бд в виде объектов
         Product product = new Product();
         
-        // запрос
         string query = @"select * from product where id = $1";
         
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
             Parameters = {new() {Value = id}}
         };
-        // выполняем команду
+
         using (cmd)
         {
-            // создаем reader
             using (NpgsqlDataReader reader = cmd.ExecuteReader())
             {
-                // проход по всем строкам таблицы
                 while (reader.Read())
                 {
-                    // перенос значений из строки базы данных в объект класса
                     product.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     product.Name = reader.GetString(reader.GetOrdinal("name"));
                     product.CurrentPrice = reader.GetDecimal(reader.GetOrdinal("current_price"));
@@ -106,8 +86,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         
         connection.Close();
         
-        var ok = GetCategory(product.Category.Id) as OkObjectResult;
-        product.Category = ok.Value as Category;
+        // дополняем объект данными
+        product.Category = GetCategory(product.Category.Id);
         
         var photos = GetProductPhotos(product.Id) as OkObjectResult;
         product.ProductPhotos = photos.Value as List<ProductPhoto>;
@@ -115,7 +95,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         var brands = GetProductBrands(product.Id) as OkObjectResult;
         product.ProductBrands = brands.Value as List<Brand>;
 
-        return new OkObjectResult(product);
+        return product;
     }
     
     public IActionResult DeleteProduct(int productId)
@@ -136,11 +116,11 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         // получаем ответ от бд: 0 - строки не обновлены, 1+ - строки обновлены
         try
         {
-            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new BadRequestResult();
+            return cmd.ExecuteNonQuery() > 0 ? new OkResult() : new BadRequestResult();
         }
         catch (Exception e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e);
         }
         finally
         {
@@ -153,9 +133,8 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     {
         connection.Open();
         // запрос
-        string query =
-            @"insert into product(name, current_price, sale, category_id)
-                           values ($1, $2, $3, $4)";
+        string query = 
+            @"insert into product(name, current_price, sale, category_id) values ($1, $2, $3, $4)";
         // дополняем запрос параметрами
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
@@ -171,12 +150,13 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         try
         {
             cmd.ExecuteNonQuery();
-            return new AcceptedResult();
+            return new OkResult();
         }
         // что-то не так с данными
         catch (Exception e)
         {
-            return new BadRequestResult();
+            // возвращаем ошибку
+            return new BadRequestObjectResult(e);
         }
         finally
         {
@@ -187,7 +167,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
     public IActionResult UpdateProduct(Product product)
     {
         connection.Close();
-        // запрос
+        
         string query =
             @"update product set
                     name = $2,
@@ -195,7 +175,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                     sale = $4,
                     category_id = $5
             where id = $1";
-        // дополняем запрос параметрами
+        
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
         {
             Parameters =
@@ -208,16 +188,14 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 new() {Value = product.Category.Id}
             }
         };
-        // пробуем выолнить
+        
         try
         {
-            // выполняем команду
-            return cmd.ExecuteNonQuery() > 0 ? new AcceptedResult() : new BadRequestResult();
+            return cmd.ExecuteNonQuery() > 0 ? new OkResult() : new BadRequestResult();
         }
-        // что-то не так с данными (ну вдруг)
         catch (Exception e)
         {
-            return new BadRequestResult();
+            return new BadRequestObjectResult(e);
         }
         finally
         {
@@ -225,14 +203,12 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         }
     }
 
-    public IActionResult GetCategory(int id)
+    public Category GetCategory(int id)
     {
-        // открываем подкючение к бд
         connection.Open();
 
         Category category = new Category();
         
-        // запрос
         string query = @"select * from product_category where id = $1";
 
         NpgsqlCommand cmd = new NpgsqlCommand(query, connection)
@@ -240,17 +216,15 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             Parameters = {new() {Value = id}}
         };
         
-        // выполняем команду
         using (cmd)
         {
-            // создаем reader
             using (NpgsqlDataReader reader = cmd.ExecuteReader())
             {
-                // проход по всем строкам таблицы
                 while (reader.Read())
                 {
                     category.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     category.Name = reader.GetString(reader.GetOrdinal("name"));
+                    
                     var description = reader.GetValue(reader.GetOrdinal("description"));
                     category.Description = description == DBNull.Value ? null : description.ToString();
                 }
@@ -259,34 +233,30 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         
         connection.Close();
         
-        return new OkObjectResult(category);
+        return category;
     }
 
-    public IActionResult GetCategories()
+    public List<Category> GetCategories()
     {
-        // открываем подкючение к бд
         connection.Open();
         
-        // для хранения продуктов из бд в виде объектов
         List<Category> categories = new List<Category>();
         
-        // запрос
         string query = @"select * from product_category";
         
-        // выполняем команду
         using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
         {
-            // создаем reader
             using (NpgsqlDataReader reader = cmd.ExecuteReader())
             {
-                // проход по всем строкам таблицы
                 while (reader.Read())
                 {
                     Category category = new Category();
                     category.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     category.Name = reader.GetString(reader.GetOrdinal("name"));
+                    
                     var description = reader.GetValue(reader.GetOrdinal("description"));
                     category.Description = description == DBNull.Value ? null : description.ToString();
+                    
                     categories.Add(category);
                 }
             }
@@ -294,7 +264,7 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
         
         connection.Close();
         
-        return new OkObjectResult(categories);
+        return categories;
     }
 
     // категория продукта
@@ -2037,4 +2007,5 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
             connection.Close();
         }
     }
+    
 }

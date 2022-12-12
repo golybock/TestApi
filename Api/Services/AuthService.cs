@@ -29,15 +29,16 @@ public class AuthService
             if (!KeyIsValid(key))
                 return new BadRequestObjectResult("Key is not valid");
 
-            string token = GenerateToken(
-                new List<Claim> {
-                    new(ClaimTypes.Email, login),
-                    new (ClaimTypes.UserData, DateTime.UtcNow.ToString())
-                    
-                });
-            
             if (ClientAuthDataValid(login, password))
             {
+                Client client =
+                
+                string token = GenerateToken(
+                    new List<Claim> {
+                        new(ClaimTypes.Email, login),
+                        new (ClaimTypes.UserData, DateTime.UtcNow.ToString())
+                    });
+                
                 return new OkObjectResult(token);
             }
         }
