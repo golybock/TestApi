@@ -1,5 +1,4 @@
 ﻿using Api.Database;
-using Api.Models;
 using Api.Models.Product;
 using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
