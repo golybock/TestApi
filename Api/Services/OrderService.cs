@@ -1,12 +1,13 @@
-﻿using Api.DB;
+﻿using Api.Database;
 using Api.Models.Order;
+using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Services;
 
 public class OrderService : IOrderService
 {
-    private ProductRepository _productRepository;
+    private readonly ProductRepository _productRepository;
     private readonly IConfiguration _configuration;
 
     public OrderService(IConfiguration configuration)

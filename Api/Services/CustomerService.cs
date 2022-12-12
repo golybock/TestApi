@@ -1,12 +1,13 @@
-﻿using Api.DB;
+﻿using Api.Database;
 using Api.Models.Customer;
+using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Services;
 
 public class CustomerService : ICustomerService
 {
-    private ProductRepository _productRepository;
+    private readonly ProductRepository _productRepository;
     private readonly IConfiguration _configuration;
     
     public CustomerService(IConfiguration configuration)

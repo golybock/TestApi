@@ -1,14 +1,18 @@
 using Api.Models.Client;
 using Api.Services;
+using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
+
+[EnableCors("Police")]
 [Route("api/[controller]")]
 [ApiController, Authorize]
 public class ClientController : ControllerBase, IClientService
 {
-    private ClientService _clientService;
+    private readonly ClientService _clientService;
 
     public ClientController(IConfiguration configuration)
     {

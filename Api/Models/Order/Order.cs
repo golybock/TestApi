@@ -19,14 +19,4 @@ public class Order
     public decimal TotalCost { get; set; } = 0;
     public List<OrderProduct> OrderProductsList { get; set; }
     public List<OrderStatuses> OrderStatusesList { get; set; }
-
-    public void Addproduct(OrderProduct orderProducts)
-    {
-        OrderProductsList.Add(orderProducts);
-    }
-
-    public void AddOrderStatuses(OrderStatuses orderStatuses)
-    {
-        OrderStatusesList.Add(orderStatuses);
-    }
 }

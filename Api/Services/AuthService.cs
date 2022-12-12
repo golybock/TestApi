@@ -1,11 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Api.DB;
+using Api.Database;
 using Api.Models.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Api.Services;
 
@@ -39,7 +38,7 @@ public class AuthService
             
             if (ClientAuthDataValid(login, password))
             {
-                return new OkObjectResult(JsonSerializer.Serialize(token));
+                return new OkObjectResult(token);
             }
         }
         catch(Exception ex)

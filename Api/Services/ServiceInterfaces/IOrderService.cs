@@ -2,7 +2,7 @@
 using Api.Models.Product;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Services;
+namespace Api.Services.ServiceInterfaces;
 
 public interface IOrderService
 {

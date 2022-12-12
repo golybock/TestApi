@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// cors
 builder.Services.AddCors(o => o.AddPolicy("Police", policyBuilder =>
 {
     policyBuilder.AllowAnyOrigin()
@@ -12,12 +13,14 @@ builder.Services.AddCors(o => o.AddPolicy("Police", policyBuilder =>
                  .AllowAnyMethod();
 }));
 
+// jwt auth
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
+})
+.AddJwtBearer(o =>
 {
     o.RequireHttpsMetadata = false;
     o.SaveToken = true;
@@ -37,9 +40,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// controllers
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+// swagger with auth
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
@@ -68,6 +73,7 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+// build
 var app = builder.Build();
 
 app.MapControllers();
@@ -78,12 +84,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// default
 app.UseHttpsRedirection();
 
 app.UseRouting();
 
+// cors
 app.UseCors();
 
+// auth
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -1,14 +1,13 @@
-﻿using System.Data;
-using Api.Models.Client;
+﻿using Api.Models.Client;
 using Api.Models.Customer;
 using Api.Models.Order;
 using Api.Models.Product;
-using Api.Services;
+using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
-namespace Api.DB;
+namespace Api.Database;
 
 public class ProductRepository : IProductsService, IOrderService, ICustomerService, IClientService
 {
@@ -1855,14 +1854,15 @@ public class ProductRepository : IProductsService, IOrderService, ICustomerServi
                 {
                     client.Id = reader.GetInt32(reader.GetOrdinal("id"));
                     client.DateTimeOfRegistration = reader.GetDateTime(reader.GetOrdinal("datetime_of_registration"));
-                    client.Token = reader.GetString(reader.GetOrdinal("token"));
-                    
+
+                    var token = reader.GetValue(reader.GetOrdinal("token"));
                     var email = reader.GetValue(reader.GetOrdinal("email"));
                     var phoneNumber = reader.GetValue(reader.GetOrdinal("phone_number"));
                     var password = reader.GetValue(reader.GetOrdinal("password"));
                     var firstName = reader.GetValue(reader.GetOrdinal("first_name"));
                     var lastName = reader.GetValue(reader.GetOrdinal("last_name"));
 
+                    client.Token = token == DBNull.Value ? null : token.ToString();
                     client.Email = email == DBNull.Value ? null : email.ToString();
                     client.PhoneNumber = phoneNumber == DBNull.Value ? null : phoneNumber.ToString();
                     client.Password = password == DBNull.Value ? null : password.ToString();

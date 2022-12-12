@@ -2,7 +2,7 @@
 using Api.Models.Customer;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Services;
+namespace Api.Services.ServiceInterfaces;
 
 public interface IClientService
 {

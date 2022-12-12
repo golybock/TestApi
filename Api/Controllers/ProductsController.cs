@@ -1,18 +1,18 @@
-﻿using Api.Models;
-using Api.Models.Product;
+﻿using Api.Models.Product;
 using Api.Services;
+using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[EnableCors("Police")]
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
+[ApiController, Authorize]
 public class ProductsController : Controller, IProductsService
 {
-    private ProductsService _productsService;
+    private readonly ProductsService _productsService;
     
     public ProductsController(IConfiguration configuration)
     {

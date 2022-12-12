@@ -13,7 +13,6 @@ public class Customer
 
     public Customer()
     {
-        
     }
 
     public int Id { get; set; }

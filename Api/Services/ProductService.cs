@@ -1,13 +1,14 @@
-﻿using Api.DB;
+﻿using Api.Database;
 using Api.Models;
 using Api.Models.Product;
+using Api.Services.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Services;
 
 public class ProductsService : IProductsService
 {
-    private ProductRepository _productRepository;
+    private readonly ProductRepository _productRepository;
     private readonly IConfiguration _configuration;
     
     public ProductsService(IConfiguration configuration)
