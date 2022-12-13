@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Api.Database;
 using Api.Models.Client;
+using Api.Models.Delivery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,8 +32,7 @@ public class AuthService
 
             if (ClientAuthDataValid(login, password))
             {
-                Client client =
-                
+
                 string token = GenerateToken(
                     new List<Claim> {
                         new(ClaimTypes.Email, login),

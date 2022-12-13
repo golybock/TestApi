@@ -1,29 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Api.Models.Account.Seller;
 
 namespace Api.Models.Product;
 
 public class Product
 {
+    public Product(int id, string name, string description, Brand.Brand brand, Category.Category category, List<Seller> sellers)
+    {
+        Id = id;
+        Name = name;
+        Description = description;
+        Brand = brand;
+        Category = category;
+        Sellers = sellers;
+    }
+
     public Product()
     {
-        Category = new Category();
-        ProductPrices = new List<ProductPrice>();
-        ProductPhotos = new List<ProductPhoto>();
-        ProductBrands = new List<Brand>();
     }
 
     public int Id { get; set; }
-    [Required(ErrorMessage = "Product name is required")]
-    public string? Name { get; set; }
-    [Required(ErrorMessage = "Price is required")]
-    [Range(1, Double.MaxValue, ErrorMessage = "Price cannot be equals or between 0")]
-    public decimal?  CurrentPrice { get; set; }
-    [Required(ErrorMessage = "Category id required")]
-    public Category Category { get; set; }
-    public decimal? Sale { get; set; } = 0;
-    public List<ProductPrice>? ProductPrices { get; set; }
-    public List<ProductPhoto>? ProductPhotos { get; set; }
-    public List<Brand>? ProductBrands { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public Brand.Brand Brand { get; set; }
+    public Category.Category Category { get; set; }
+    public List<Seller> Sellers { get; set; }
 }

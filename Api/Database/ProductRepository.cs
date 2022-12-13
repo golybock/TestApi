@@ -10,7 +10,7 @@ namespace Api.Database;
 
 public class ProductRepository : MainDatabaseClass
 {
-    protected ProductRepository(string connectionString) : base(connectionString)
+    public ProductRepository(string connectionString) : base(connectionString)
     {
     }
     
